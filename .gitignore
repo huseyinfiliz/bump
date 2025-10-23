@@ -15,10 +15,8 @@ yarn-error.log*
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# Build artifacts
-/js/dist-typings/
-dist-typings/
+package-lock.json
+yarn.lock
 
 # Tests
 tests/.phpunit.result.cache
