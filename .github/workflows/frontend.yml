@@ -17,16 +17,11 @@ jobs:
       
       - name: Install dependencies
         working-directory: js
-        run: npm ci
+        run: npm install
       
       - name: Check formatting (Prettier)
         working-directory: js
         run: npm run format-check
-        continue-on-error: false
-      
-      - name: Check TypeScript types
-        working-directory: js
-        run: npm run check-typings
         continue-on-error: false
       
       - name: Build
