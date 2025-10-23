@@ -1,0 +1,25 @@
+includes:
+    - vendor/flarum/phpstan/extension.neon
+
+parameters:
+    # Level 3 provides good coverage without being too strict
+    level: 3
+
+    paths:
+        - src
+
+    excludePaths:
+        - tests
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+
+    ignoreErrors:
+        # Allow dynamic properties on Eloquent models
+        - '#Access to an undefined property Flarum\\[^:]+::\$[^.]+\.#'
+
+        # Allow dynamic calls on Container
+        - '#Call to an undefined method Illuminate\\Contracts\\Container\\Container::[^(]+\(\)\.#'
+
+        # Tags extension methods (required dependency)
+        - '#Call to an undefined method Flarum\\Discussion\\Discussion::tags\(\)\.#'

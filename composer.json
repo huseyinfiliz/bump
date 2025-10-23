@@ -1,0 +1,90 @@
+{
+    "name": "huseyinfiliz/bump",
+    "description": "A powerful discussion bumping system with manual bump, absorber, quota management, and group-based permissions",
+    "keywords": [
+        "flarum",
+        "bump",
+        "discussion",
+        "absorber",
+        "quota",
+        "cooldown",
+        "permissions"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.2.0",
+        "flarum/tags": "*"
+    },
+    "authors": [
+        {
+            "name": "Hüseyin Filiz",
+            "email": "mysuperuser01@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "HuseyinFiliz\\Bump\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Bump",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-level-up-alt",
+                "color": "#fff",
+                "backgroundColor": "#3498db"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": true,
+                "css": true,
+                "locale": true,
+                "gitConf": true,
+                "githubActions": true,
+                "prettier": true,
+                "typescript": true,
+                "bundlewatch": false,
+                "backendTesting": true,
+                "editorConfig": true,
+                "styleci": true
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload-dev": {
+        "psr-4": {
+            "HuseyinFiliz\\Bump\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:integration"
+        ],
+        "test:unit": "phpunit -c tests/phpunit.unit.xml",
+        "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:setup": "@php tests/integration/setup.php",
+        "analyse:phpstan": "phpstan analyse",
+        "analyse:phpstan:baseline": "phpstan analyse --generate-baseline"
+    },
+    "scripts-descriptions": {
+        "test": "Runs all tests.",
+        "test:unit": "Runs all unit tests.",
+        "test:integration": "Runs all integration tests.",
+        "test:setup": "Sets up a database for use with integration tests. Execute this only once.",
+        "analyse:phpstan": "Run static analysis with PHPStan.",
+        "analyse:phpstan:baseline": "Generate PHPStan baseline for existing errors."
+    },
+    "require-dev": {
+        "flarum/testing": "^1.0.0",
+        "flarum/phpstan": "*"
+    }
+}

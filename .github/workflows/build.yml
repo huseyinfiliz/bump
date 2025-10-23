@@ -1,0 +1,26 @@
+name: Build JavaScript Assets
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'js/**'
+      - 'package.json'
+      - 'composer.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build JavaScript
+        uses: flarum/action-build@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          package_manager: npm
+          build_script: build
+          js_path: ./js
