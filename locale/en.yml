@@ -78,7 +78,7 @@ huseyinfiliz-bump:
       select_group: Select Group
       manual_section: Manual Bump Settings
       absorber_section: Absorber Settings
-      use_global: "Use global ({value}h)"
+      use_global: "Use global ({value})"
       custom_value: "Custom value:"
       minus_one_disabled_zero_unlimited: "Set to -1 to disable, 0 for unlimited, or positive number for limit"
       zero_means_bypass: "Set to 0 to bypass absorber (allow immediate bumps)"

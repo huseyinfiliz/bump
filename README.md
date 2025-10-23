@@ -1,10 +1,23 @@
-# Bump for Flarum
+![](https://i.ibb.co/LXt5w5hG/bumps.png)
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 [![Latest Stable Version](https://img.shields.io/packagist/v/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump)
 [![Total Downloads](https://img.shields.io/packagist/dt/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump)
 
+# Bump
 A powerful discussion bumping system for [Flarum](https://flarum.org) forums. Allow users to bump discussions to keep them visible, with comprehensive quota management, cooldown controls, and group-based permissions.
+
+### 🤖 Manual Bump Settings
+![Demo](https://i.ibb.co/nsx19jNv/image.png)
+
+### 🛠️ Absorber Settings
+![Demo](https://i.ibb.co/sJwNcsbb/image.png)
+
+### 🔧 Group Overrides Settings
+![Demo](https://i.ibb.co/DDD4pWbj/image.png)
+
+### 📈 Recent Activity
+![Demo](https://i.ibb.co/7dW5Gdq0/image.png)
 
 ## Features
 

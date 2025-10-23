@@ -1,12 +1,78 @@
-/vendor
-composer.lock
+# Composer
+/vendor/
 composer.phar
+composer.lock
 
-.DS_Store
-Thumbs.db
+# Node / NPM / Yarn
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Build artifacts
+/js/dist/
+/js/dist-typings/
+dist-typings/
+
+# Tests
 tests/.phpunit.result.cache
 /tests/integration/tmp
+coverage/
+.phpunit.result.cache
+.nyc_output
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.code-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
 .vagrant
-.idea/*
-.vscode
-js/coverage-ts
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+
+# Environment
+.env
+.env.local
+.env.*.local
