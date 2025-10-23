@@ -1,8 +1,6 @@
 ![](https://i.ibb.co/LXt5w5hG/bumps.png)
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Latest Stable Version](https://img.shields.io/packagist/v/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump)
-[![Total Downloads](https://img.shields.io/packagist/dt/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump) [![Total Downloads](https://img.shields.io/packagist/dt/huseyinfiliz/bump.svg)](https://packagist.org/packages/huseyinfiliz/bump)
 
 # Bump
 A powerful discussion bumping system for [Flarum](https://flarum.org) forums. Allow users to bump discussions to keep them visible, with comprehensive quota management, cooldown controls, and group-based permissions.
@@ -163,7 +161,7 @@ If you find this extension useful, consider:
 - ⭐ Starring the repository on GitHub
 - 💬 Leaving feedback on the Flarum discussion
 - **Issues**: [GitHub Issues](https://github.com/huseyinfiliz/bump/issues)
-- **Discussions**: [Flarum Community](https://discuss.flarum.org)
+- **Discussions**: [Flarum Community](https://discuss.flarum.org/d/38327-bump-smart-absorber-push-top)
 
 ---
 
