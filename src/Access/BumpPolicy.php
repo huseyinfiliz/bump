@@ -24,7 +24,7 @@ class BumpPolicy extends AbstractPolicy
     public function bump(User $actor, Discussion $discussion)
     {
         // CHECK 1: Manual bump enabled globally?
-        if (!$this->settings->get('huseyinfiliz-bump.enable-manual-bump', false)) {
+        if (!$this->settings->get('huseyinfiliz-bump.enable-manual-bump', true)) {
             return $this->deny();
         }
 
