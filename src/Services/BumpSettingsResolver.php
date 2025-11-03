@@ -116,16 +116,25 @@ class BumpSettingsResolver
      */
     protected function resolveForUser(User $user, string $type, string $key, string $fallbackKey): int
     {
+        // Get user's groups
+        $groups = $user->groups;
+        
+        // FALLBACK: If no groups and not a guest, use global settings directly
+        // This handles implicit Members group case where group_user table has no record
+        if ($groups->isEmpty() && !$user->isGuest()) {
+            return (int) $this->settings->get("huseyinfiliz-bump.{$fallbackKey}", 0);
+        }
+        
         // Build cache key based on group combination
-        $groupIds = $user->groups->pluck('id')->sort()->implode(',');
+        $groupIds = $groups->pluck('id')->sort()->implode(',');
         $cacheKey = "bump:groups:{$groupIds}:{$type}:{$key}";
 
-        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($user, $type, $key, $fallbackKey) {
+        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($groups, $type, $key, $fallbackKey) {
             // Load group overrides (this is also cached separately)
             $groupOverrides = $this->getGroupOverrides($type);
 
             // Find highest priority group with override
-            foreach ($user->groups->sortByDesc('id') as $group) {
+            foreach ($groups->sortByDesc('id') as $group) {
                 if (isset($groupOverrides[$group->id][$key])) {
                     return (int) $groupOverrides[$group->id][$key];
                 }
@@ -233,7 +242,15 @@ class BumpSettingsResolver
             return false;
         }
 
-        $userGroupIds = $user->groups->pluck('id')->toArray();
+        // Get user's groups with fallback handling
+        $groups = $user->groups;
+        
+        // If user has no explicit groups (implicit Members), they can't be moderators
+        if ($groups->isEmpty()) {
+            return false;
+        }
+
+        $userGroupIds = $groups->pluck('id')->toArray();
         return !empty(array_intersect($moderatorGroups, $userGroupIds));
     }
 
@@ -258,7 +275,15 @@ class BumpSettingsResolver
             return false;
         }
 
-        $userGroupIds = $user->groups->pluck('id')->toArray();
+        // Get user's groups with fallback handling
+        $groups = $user->groups;
+        
+        // If user has no explicit groups (implicit Members), they can't bypass globally
+        if ($groups->isEmpty()) {
+            return false;
+        }
+
+        $userGroupIds = $groups->pluck('id')->toArray();
         return !empty(array_intersect($bypassGroups, $userGroupIds));
     }
 }
