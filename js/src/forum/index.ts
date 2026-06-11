@@ -7,18 +7,16 @@ import humanTime from 'flarum/common/helpers/humanTime';
 
 app.initializers.add('huseyinfiliz/bump', () => {
   extend(DiscussionControls, 'moderationControls', function (items, discussion: Discussion) {
-    // CHECK: Is manual bump enabled?
     const manualBumpEnabled = app.forum.attribute('huseyinfiliz-bump.enable-manual-bump');
 
     if (!manualBumpEnabled) {
-      return; // Feature disabled, don't show button
+      return; 
     }
 
     if (!discussion.canBump()) {
-      return; // No permission
+      return; 
     }
 
-    // Get user-specific settings from backend (respects group overrides)
     const cooldownHours = discussion.bumpCooldownHours() || 0;
     const isModerator = discussion.canModerateBumps();
     const isBumpDisabled = discussion.isBumpDisabled();
@@ -32,7 +30,6 @@ app.initializers.add('huseyinfiliz/bump', () => {
     let disableReason: string = '';
     let cooldownMinutes = 0;
 
-    // CHECK: Is bump disabled for user's group?
     if (isBumpDisabled) {
       canBumpNow = false;
       disableReason = String(app.translator.trans('huseyinfiliz-bump.forum.bump_disabled_for_group'));
@@ -41,7 +38,6 @@ app.initializers.add('huseyinfiliz/bump', () => {
     }
 
     if (!isModerator && !isBumpDisabled) {
-      // Cooldown check (only if cooldown > 0)
       if (cooldownHours > 0 && lastManualBumpedAt) {
         const hoursSince = (Date.now() - lastManualBumpedAt.getTime()) / (1000 * 60 * 60);
 
@@ -57,10 +53,6 @@ app.initializers.add('huseyinfiliz/bump', () => {
         }
       }
 
-      // Quota check
-      const dailyQuota = discussion.dailyBumpQuota();
-      const weeklyQuota = discussion.weeklyBumpQuota();
-
       if (canBumpNow && dailyQuota && dailyQuota.remaining <= 0) {
         canBumpNow = false;
         disableReason = String(app.translator.trans('huseyinfiliz-bump.forum.bump_quota_exceeded_daily'));
@@ -71,18 +63,14 @@ app.initializers.add('huseyinfiliz/bump', () => {
         disableReason = String(app.translator.trans('huseyinfiliz-bump.forum.bump_quota_exceeded_weekly'));
       }
 
-      // Build button text and tooltip
       if (cooldownMinutes > 0) {
-        // Priority 1: Show cooldown time
         const timeText = formatCooldownTime(cooldownMinutes);
         buttonText = app.translator.trans('huseyinfiliz-bump.forum.bump_button_cooldown', { time: timeText });
         tooltipText = disableReason;
       } else {
-        // Priority 2: Show most restrictive quota (daily or weekly)
         let quotaToShow = null;
         let quotaInfo: string[] = [];
 
-        // Collect quota info for tooltip
         if (dailyQuota && dailyQuota.limit > 0) {
           quotaToShow = dailyQuota;
           quotaInfo.push(`Daily: ${dailyQuota.remaining}/${dailyQuota.limit}`);
@@ -91,24 +79,20 @@ app.initializers.add('huseyinfiliz/bump', () => {
         if (weeklyQuota && weeklyQuota.limit > 0) {
           quotaInfo.push(`Weekly: ${weeklyQuota.remaining}/${weeklyQuota.limit}`);
 
-          // If weekly is more restrictive, use it instead
           if (!quotaToShow || weeklyQuota.remaining < quotaToShow.remaining) {
             quotaToShow = weeklyQuota;
           }
         }
 
-        // Update button text with most restrictive quota
         if (quotaToShow) {
           buttonText = app.translator.trans('huseyinfiliz-bump.forum.bump_button_quota', { count: quotaToShow.remaining });
           tooltipText = quotaInfo.join(', ');
         } else if (!canBumpNow) {
-          // Disabled but no cooldown/quota shown
           tooltipText = disableReason;
         }
       }
     }
 
-    // Helper function to format cooldown time
     function formatCooldownTime(minutes: number): string {
       if (minutes < 60) {
         return `${minutes}m`;
@@ -157,7 +141,6 @@ app.initializers.add('huseyinfiliz/bump', () => {
   });
 });
 
-// Extend Discussion model
 declare module 'flarum/common/models/Discussion' {
   export default interface Discussion {
     canBump(): boolean;

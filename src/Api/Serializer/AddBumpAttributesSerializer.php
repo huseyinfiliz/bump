@@ -2,19 +2,16 @@
 
 namespace HuseyinFiliz\Bump\Api\Serializer;
 
+use Carbon\Carbon;
 use Flarum\Api\Serializer\DiscussionSerializer;
 use Flarum\Settings\SettingsRepositoryInterface;
-use HuseyinFiliz\Bump\BumpQuota;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
 use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
+use Illuminate\Database\QueryException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Adds bump-related attributes to discussion API responses.
- *
- * This serializer adds bump-specific data to discussion API responses,
- * including permissions, last bump times, and quota information.
- * It uses context-aware serialization to prevent N+1 queries in list views.
- * Uses BumpSettingsResolver to apply group-based settings.
  */
 class AddBumpAttributesSerializer
 {
@@ -34,42 +31,37 @@ class AddBumpAttributesSerializer
     protected $resolver;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param SettingsRepositoryInterface $settings
      * @param BumpQuotaRepository $repository
      * @param BumpSettingsResolver $resolver
+     * @param LoggerInterface $logger
      */
     public function __construct(
         SettingsRepositoryInterface $settings,
         BumpQuotaRepository $repository,
-        BumpSettingsResolver $resolver
+        BumpSettingsResolver $resolver,
+        LoggerInterface $logger
     ) {
         $this->settings = $settings;
         $this->repository = $repository;
         $this->resolver = $resolver;
+        $this->logger = $logger;
     }
 
-    /**
-     * Add bump attributes to discussion serialization.
-     *
-     * Invoked by Flarum's API serialization system to add bump-specific
-     * attributes to discussion API responses.
-     *
-     * @param DiscussionSerializer $serializer The discussion serializer
-     * @param mixed $discussion The discussion model
-     * @param array $attributes Current attributes array
-     * @return array Modified attributes array with bump data
-     */
     public function __invoke(DiscussionSerializer $serializer, $discussion, array $attributes): array
     {
         $actor = $serializer->getActor();
 
-        // Basic bump attributes
         $attributes['canBump'] = $actor->can('bump', $discussion);
         $attributes['lastBumpedAt'] = $discussion->last_bumped_at
             ? $serializer->formatDate($discussion->last_bumped_at)
             : null;
 
-        // User-specific bump information
         if (!$actor->isGuest()) {
             $this->addUserBumpInfo($serializer, $discussion, $actor, $attributes);
         } else {
@@ -79,71 +71,47 @@ class AddBumpAttributesSerializer
         return $attributes;
     }
 
-    /**
-     * Add bump information for authenticated users.
-     *
-     * Includes last manual bump time and quota information.
-     * Quota data is needed for bump button text display.
-     *
-     * @param DiscussionSerializer $serializer The serializer instance
-     * @param mixed $discussion The discussion model
-     * @param mixed $actor The current user
-     * @param array $attributes Attributes array to modify
-     * @return void
-     */
     protected function addUserBumpInfo(DiscussionSerializer $serializer, $discussion, $actor, array &$attributes): void
     {
         try {
-            // Last manual bump time for this discussion
             $lastManualBump = $this->getLastManualBump($discussion, $actor);
 
             $attributes['lastManualBumpedAt'] = $lastManualBump
-                ? $serializer->formatDate($lastManualBump->bumped_at)
+                ? $serializer->formatDate($lastManualBump)
                 : null;
 
-            // Always add quota info (needed for bump button text)
             $this->addQuotaInfo($actor, $attributes);
-        } catch (\Exception $e) {
-            // Table doesn't exist yet or other error
-            $this->addGuestBumpInfo($attributes);
+        } catch (QueryException $e) {
+            $code = $e->getCode();
+            // Fallback for migration window (table or column doesn't exist yet)
+            if ($code === '42S02' || $code === '42S22' || str_contains($e->getMessage(), 'Base table or view not found') || str_contains($e->getMessage(), 'Unknown column')) {
+                $this->addGuestBumpInfo($attributes);
+            } else {
+                $this->logger->error('Bump Extension DB Error: ' . $e->getMessage());
+                throw $e;
+            }
         }
     }
 
-    /**
-     * Add quota and settings information for the user.
-     *
-     * Uses BumpSettingsResolver to get user-specific settings based on group overrides.
-     * Fetches quota counts from repository (cached for 60 seconds)
-     * to provide current usage statistics.
-     *
-     * @param mixed $actor The current user
-     * @param array $attributes Attributes array to modify
-     * @return void
-     */
     protected function addQuotaInfo($actor, array &$attributes): void
     {
-        // Get user-specific settings using resolver (respects group overrides)
         $cooldownHours = $this->resolver->getCooldown($actor);
         $dailyQuota = $this->resolver->getDailyQuota($actor);
         $weeklyQuota = $this->resolver->getWeeklyQuota($actor);
         $isModerator = $this->resolver->canModerateBumps($actor);
         $isBumpDisabled = $this->resolver->isBumpDisabled($actor);
 
-        // Add user-specific settings to attributes
         $attributes['bumpCooldownHours'] = $cooldownHours;
         $attributes['canModerateBumps'] = $isModerator;
         $attributes['isBumpDisabled'] = $isBumpDisabled;
 
-        // If bump is disabled or user is moderator, quotas don't apply
         if ($isBumpDisabled || $isModerator) {
             $attributes['dailyBumpQuota'] = null;
             $attributes['weeklyBumpQuota'] = null;
             return;
         }
 
-        // Add quota information (0 = unlimited, positive = limited)
         if ($dailyQuota > 0 || $weeklyQuota > 0) {
-            // Use repository to get cached quota counts (60 second cache)
             $quotaCounts = $this->repository->getQuotaCounts($actor->id);
 
             $attributes['dailyBumpQuota'] = $dailyQuota > 0 ? [
@@ -163,14 +131,6 @@ class AddBumpAttributesSerializer
         }
     }
 
-    /**
-     * Add null bump info for guest users.
-     *
-     * Sets all bump-related attributes to null for unauthenticated users.
-     *
-     * @param array $attributes Attributes array to modify
-     * @return void
-     */
     protected function addGuestBumpInfo(array &$attributes): void
     {
         $attributes['lastManualBumpedAt'] = null;
@@ -182,25 +142,18 @@ class AddBumpAttributesSerializer
     }
 
     /**
-     * Get last manual bump for the discussion and user.
-     *
-     * Uses eager-loaded relationship if available to prevent additional queries,
-     * otherwise falls back to repository method.
-     *
-     * @param mixed $discussion The discussion model
-     * @param mixed $actor The current user
-     * @return BumpQuota|null The last bump record or null
+     * @return \Carbon\Carbon|null
      */
-    protected function getLastManualBump($discussion, $actor): ?BumpQuota
+    protected function getLastManualBump($discussion, $actor): ?Carbon
     {
-        // Use eager-loaded relationship if available to prevent N+1 queries
-        if ($discussion->relationLoaded('lastBumpQuota')) {
-            return $discussion->lastBumpQuota()
-                ->where('user_id', $actor->id)
-                ->first();
+        if (array_key_exists('actor_last_bumped_at', $discussion->getAttributes())) {
+            $lastBumpedAt = $discussion->getAttribute('actor_last_bumped_at');
+
+            return $lastBumpedAt ? Carbon::parse($lastBumpedAt) : null;
         }
 
-        // Fallback to repository method (not cached as it's user+discussion specific)
-        return $this->repository->getLastManualBump($actor->id, $discussion->id);
+        $bump = $this->repository->getLastManualBump($actor->id, $discussion->id);
+
+        return $bump ? Carbon::parse($bump->bumped_at) : null;
     }
 }

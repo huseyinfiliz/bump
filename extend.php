@@ -13,6 +13,9 @@ use HuseyinFiliz\Bump\Api\Controllers\BumpStatsController;
 use HuseyinFiliz\Bump\Api\Controllers\ClearCacheController;
 use HuseyinFiliz\Bump\Api\Serializer\AddBumpAttributesSerializer;
 use HuseyinFiliz\Bump\Providers\BumpServiceProvider;
+use Flarum\Api\Controller\ListDiscussionsController;
+use Flarum\Http\RequestUtil;
+use Illuminate\Support\Collection;
 
 return [
     (new Extend\Frontend('forum'))
@@ -55,12 +58,41 @@ return [
         ->get('/bump/stats', 'bump.stats', BumpStatsController::class)
         ->post('/bump/clear-cache', 'bump.clear-cache', ClearCacheController::class),
 
-    // Eager load bump quotas to prevent N+1 queries
-    (new Extend\ApiController(\Flarum\Api\Controller\ListDiscussionsController::class))
-        ->addInclude('lastBumpQuota'),
+    // Eager load bump quotas to prevent N+1 queries using Batch API Hook
+    (new Extend\ApiController(ListDiscussionsController::class))
+        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+            $actor = RequestUtil::getActor($request);
 
-    (new Extend\ApiController(\Flarum\Api\Controller\ShowDiscussionController::class))
-        ->addInclude('lastBumpQuota'),
+            if ($actor->isGuest()) {
+                return;
+            }
+
+            // Flarum 1.x defansif Collection dönüşümü
+            $discussions = collect(
+                is_object($data) && method_exists($data, 'getResults') ? $data->getResults() : (is_iterable($data) ? $data : [])
+            );
+
+            $discussionIds = $discussions->pluck('id')->filter()->values()->all();
+
+            if (empty($discussionIds)) {
+                return;
+            }
+
+            $actorBumps = BumpQuota::whereIn('discussion_id', $discussionIds)
+                ->where('user_id', $actor->id)
+                ->selectRaw('discussion_id, MAX(bumped_at) as last_bumped_at')
+                ->groupBy('discussion_id')
+                ->get()
+                ->keyBy('discussion_id');
+
+            // N+1 Koruması: Kayıt yoksa bile 'null' olarak attribute'a yazılır.
+            foreach ($discussions as $discussion) {
+                $discussion->setAttribute(
+                    'actor_last_bumped_at',
+                    optional($actorBumps->get($discussion->id))->last_bumped_at
+                );
+            }
+        }),
 
     (new Extend\Settings())
         // Absorber
