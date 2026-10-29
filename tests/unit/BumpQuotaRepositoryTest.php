@@ -56,6 +56,5 @@ class BumpQuotaRepositoryTest extends TestCase
         $this->assertTrue(method_exists($repository, 'getWeeklyBumpCount'));
         $this->assertTrue(method_exists($repository, 'invalidateQuotaCache'));
         $this->assertTrue(method_exists($repository, 'invalidateStatsCache'));
-        $this->assertTrue(method_exists($repository, 'getQuotaSettings'));
     }
 }

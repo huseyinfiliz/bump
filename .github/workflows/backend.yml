@@ -4,9 +4,11 @@ on: [workflow_dispatch, push, pull_request]
 
 jobs:
   run:
-    uses: flarum/framework/.github/workflows/REUSABLE_backend.yml@main
+    uses: flarum/framework/.github/workflows/REUSABLE_backend.yml@1.x
     with:
       enable_backend_testing: true
       enable_phpstan: false
 
       backend_directory: .
+      php_versions: '["8.0", "8.1", "8.2", "8.3"]'
+      runner_type: ubuntu-24.04

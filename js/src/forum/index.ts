@@ -10,11 +10,11 @@ app.initializers.add('huseyinfiliz/bump', () => {
     const manualBumpEnabled = app.forum.attribute('huseyinfiliz-bump.enable-manual-bump');
 
     if (!manualBumpEnabled) {
-      return; 
+      return;
     }
 
     if (!discussion.canBump()) {
-      return; 
+      return;
     }
 
     const cooldownHours = discussion.bumpCooldownHours() || 0;
