@@ -2,7 +2,6 @@
 
 namespace HuseyinFiliz\Bump\Tests\Unit;
 
-use Carbon\Carbon;
 use Flarum\Testing\unit\TestCase;
 use HuseyinFiliz\Bump\BumpQuota;
 

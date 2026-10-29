@@ -62,7 +62,7 @@ class AddBumpAttributesSerializer
             ? $serializer->formatDate($discussion->last_bumped_at)
             : null;
 
-        if (!$actor->isGuest()) {
+        if (! $actor->isGuest()) {
             $this->addUserBumpInfo($serializer, $discussion, $actor, $attributes);
         } else {
             $this->addGuestBumpInfo($attributes);
@@ -87,7 +87,8 @@ class AddBumpAttributesSerializer
             if ($code === '42S02' || $code === '42S22' || str_contains($e->getMessage(), 'Base table or view not found') || str_contains($e->getMessage(), 'Unknown column')) {
                 $this->addGuestBumpInfo($attributes);
             } else {
-                $this->logger->error('Bump Extension DB Error: ' . $e->getMessage());
+                $this->logger->error('Bump Extension DB Error: '.$e->getMessage());
+
                 throw $e;
             }
         }
@@ -108,6 +109,7 @@ class AddBumpAttributesSerializer
         if ($isBumpDisabled || $isModerator) {
             $attributes['dailyBumpQuota'] = null;
             $attributes['weeklyBumpQuota'] = null;
+
             return;
         }
 

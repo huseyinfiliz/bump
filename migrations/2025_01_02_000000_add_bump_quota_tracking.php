@@ -12,10 +12,10 @@ return [
             $table->integer('user_id')->unsigned();
             $table->integer('discussion_id')->unsigned();
             $table->timestamp('bumped_at');
-            
+
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('discussion_id')->references('id')->on('discussions')->onDelete('cascade');
-            
+
             $table->index(['user_id', 'bumped_at']);
         });
     },

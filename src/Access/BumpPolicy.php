@@ -3,9 +3,9 @@
 namespace HuseyinFiliz\Bump\Access;
 
 use Flarum\Discussion\Discussion;
+use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
-use Flarum\Settings\SettingsRepositoryInterface;
 use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
 
 class BumpPolicy extends AbstractPolicy
@@ -24,14 +24,14 @@ class BumpPolicy extends AbstractPolicy
     public function bump(User $actor, Discussion $discussion)
     {
         // CHECK 1: Manual bump enabled globally?
-        if (!$this->settings->get('huseyinfiliz-bump.enable-manual-bump', true)) {
+        if (! $this->settings->get('huseyinfiliz-bump.enable-manual-bump', true)) {
             return $this->deny();
         }
 
         // CHECK 2: Tag control (applies to everyone)
         $allowedTags = json_decode($this->settings->get('huseyinfiliz-bump.manual-bump-tags', '[]'), true);
 
-        if (!empty($allowedTags)) {
+        if (! empty($allowedTags)) {
             $discussionTags = $discussion->tags()->pluck('id')->toArray();
 
             // Discussion must have at least one allowed tag
@@ -48,7 +48,7 @@ class BumpPolicy extends AbstractPolicy
         // CHECK 4: Is it their own discussion AND is bump not disabled?
         if ($discussion->user_id === $actor->id) {
             // Allow if bump is not disabled for their group
-            if (!$this->resolver->isBumpDisabled($actor)) {
+            if (! $this->resolver->isBumpDisabled($actor)) {
                 return $this->allow();
             }
         }

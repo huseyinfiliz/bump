@@ -2,9 +2,9 @@
 
 namespace HuseyinFiliz\Bump\Tests\Unit;
 
+use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Testing\unit\TestCase;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Mockery as m;
 

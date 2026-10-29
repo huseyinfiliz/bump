@@ -2,10 +2,10 @@
 
 namespace HuseyinFiliz\Bump;
 
+use Carbon\Carbon;
 use Flarum\Database\AbstractModel;
 use Flarum\Discussion\Discussion;
 use Flarum\User\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 /**

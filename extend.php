@@ -2,19 +2,18 @@
 
 namespace HuseyinFiliz\Bump;
 
-use Flarum\Extend;
+use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Discussion\Discussion;
+use Flarum\Extend;
+use Flarum\Http\RequestUtil;
 use Flarum\User\User;
 use HuseyinFiliz\Bump\Access\BumpPolicy;
-use HuseyinFiliz\Bump\BumpQuota;
-use HuseyinFiliz\Bump\Listeners\HandlePostPosted;
-use HuseyinFiliz\Bump\Api\Controllers\ManualBumpController;
 use HuseyinFiliz\Bump\Api\Controllers\BumpStatsController;
 use HuseyinFiliz\Bump\Api\Controllers\ClearCacheController;
+use HuseyinFiliz\Bump\Api\Controllers\ManualBumpController;
 use HuseyinFiliz\Bump\Api\Serializer\AddBumpAttributesSerializer;
+use HuseyinFiliz\Bump\Listeners\HandlePostPosted;
 use HuseyinFiliz\Bump\Providers\BumpServiceProvider;
-use Flarum\Api\Controller\ListDiscussionsController;
-use Flarum\Http\RequestUtil;
 use Illuminate\Support\Collection;
 
 return [
@@ -110,7 +109,7 @@ return [
         // Quota
         ->default('huseyinfiliz-bump.owner-daily-quota', 0)
         ->default('huseyinfiliz-bump.owner-weekly-quota', 0)
-        
+
         ->serializeToForum('huseyinfiliz-bump.enable-manual-bump', 'huseyinfiliz-bump.enable-manual-bump', 'boolval')
         ->serializeToForum('huseyinfiliz-bump.manual-cooldown-hours', 'huseyinfiliz-bump.manual-cooldown-hours', 'intval'),
 
