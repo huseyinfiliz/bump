@@ -11,9 +11,6 @@ parameters:
     excludePaths:
         - tests
 
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-
     ignoreErrors:
         # Allow dynamic properties on Eloquent models
         - '#Access to an undefined property Flarum\\[^:]+::\$[^.]+\.#'
