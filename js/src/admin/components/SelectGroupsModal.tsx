@@ -1,14 +1,16 @@
+import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
-import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
+import { IFormModalAttrs } from 'flarum/common/components/FormModal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Group from 'flarum/common/models/Group';
 
-interface SelectGroupsModalAttrs extends IInternalModalAttrs {
+interface SelectGroupsModalAttrs extends IFormModalAttrs {
   selectedGroupIds: string[];
   onsubmit: (selectedGroupIds: string[]) => void;
 }
 
-export default class SelectGroupsModal extends Modal<SelectGroupsModalAttrs> {
+export default class SelectGroupsModal extends FormModal<SelectGroupsModalAttrs> {
   selectedGroupIds: Set<string> = new Set();
 
   oninit(vnode: any) {
@@ -31,8 +33,8 @@ export default class SelectGroupsModal extends Modal<SelectGroupsModalAttrs> {
 
     return (
       <div className="Modal-body">
-        <div className="Form">
-          {/* Groups List */}
+        <Form>
+          {}
           <div className="SelectGroups-list">
             {groups.length === 0 ? (
               <p className="SelectGroups-empty">{app.translator.trans('huseyinfiliz-bump.admin.select_groups_modal.no_groups')}</p>
@@ -41,7 +43,7 @@ export default class SelectGroupsModal extends Modal<SelectGroupsModalAttrs> {
             )}
           </div>
 
-          {/* Buttons */}
+          {}
           <div className="Form-group">
             <Button className="Button Button--primary" type="submit" onclick={this.onsubmit.bind(this)}>
               {app.translator.trans('huseyinfiliz-bump.admin.select_groups_modal.save')}
@@ -50,7 +52,7 @@ export default class SelectGroupsModal extends Modal<SelectGroupsModalAttrs> {
               {app.translator.trans('huseyinfiliz-bump.admin.select_groups_modal.cancel')}
             </Button>
           </div>
-        </div>
+        </Form>
       </div>
     );
   }

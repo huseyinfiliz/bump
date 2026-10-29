@@ -1,9 +1,10 @@
 import app from 'flarum/admin/app';
-import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
+import { IFormModalAttrs } from 'flarum/common/components/FormModal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Group from 'flarum/common/models/Group';
 
-interface GroupOverrideModalAttrs extends IInternalModalAttrs {
+interface GroupOverrideModalAttrs extends IFormModalAttrs {
   groupId?: string;
   manualOverride?: {
     cooldown?: number;
@@ -23,7 +24,7 @@ interface GroupOverrideModalAttrs extends IInternalModalAttrs {
   onsubmit: (groupId: string, manualOverride: any, absorberOverride: any) => void;
 }
 
-export default class GroupOverrideModal extends Modal<GroupOverrideModalAttrs> {
+export default class GroupOverrideModal extends FormModal<GroupOverrideModalAttrs> {
   selectedGroupId!: string;
 
   // Manual bump settings
