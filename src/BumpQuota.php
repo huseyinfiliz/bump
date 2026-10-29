@@ -7,6 +7,7 @@ use Flarum\Discussion\Discussion;
 use Flarum\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class BumpQuota extends AbstractModel
 {
+    use HasFactory;
+
     /**
      * The table associated with the model.
      *
