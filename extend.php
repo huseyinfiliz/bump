@@ -58,7 +58,7 @@ return [
         ->get('/bump/stats', 'bump.stats', BumpStatsController::class)
         ->post('/bump/clear-cache', 'bump.clear-cache', ClearCacheController::class),
 
-    // Eager load bump quotas to prevent N+1 queries using Batch API Hook
+    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
     (new Extend\ApiController(ListDiscussionsController::class))
         ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
             $actor = RequestUtil::getActor($request);
@@ -114,7 +114,8 @@ return [
         ->serializeToForum('huseyinfiliz-bump.enable-manual-bump', 'huseyinfiliz-bump.enable-manual-bump', 'boolval')
         ->serializeToForum('huseyinfiliz-bump.manual-cooldown-hours', 'huseyinfiliz-bump.manual-cooldown-hours', 'intval'),
 
-    // Add bump attributes to discussion API responses
+    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
     (new Extend\ApiSerializer(\Flarum\Api\Serializer\DiscussionSerializer::class))
         ->attributes(AddBumpAttributesSerializer::class),
+    new Extend\ApiResource(Api\Resource\BumpStatsResource::class),
 ];
