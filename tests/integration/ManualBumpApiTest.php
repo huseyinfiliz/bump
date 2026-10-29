@@ -3,8 +3,12 @@
 namespace HuseyinFiliz\Bump\Tests\Integration;
 
 use Carbon\Carbon;
+use Flarum\Discussion\Discussion;
+use Flarum\Post\Post;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Integration tests for Manual Bump API functionality.
@@ -24,14 +28,14 @@ class ManualBumpApiTest extends TestCase
         $this->extension('flarum-tags');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
-            'discussions' => [
+            Discussion::class => [
                 ['id' => 1, 'title' => 'User Discussion', 'user_id' => 2, 'comment_count' => 1, 'created_at' => Carbon::now()],
                 ['id' => 2, 'title' => 'Second Discussion', 'user_id' => 2, 'comment_count' => 1, 'created_at' => Carbon::now()],
             ],
-            'posts' => [
+            Post::class => [
                 ['id' => 1, 'discussion_id' => 1, 'user_id' => 2, 'type' => 'comment', 'content' => '<t><p>First post</p></t>', 'created_at' => Carbon::now(), 'number' => 1],
                 ['id' => 2, 'discussion_id' => 2, 'user_id' => 2, 'type' => 'comment', 'content' => '<t><p>First post</p></t>', 'created_at' => Carbon::now(), 'number' => 1],
             ],
@@ -41,9 +45,7 @@ class ManualBumpApiTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function guest_cannot_bump_discussion()
     {
         // Enable manual bump
@@ -57,9 +59,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertContains($response->getStatusCode(), [400, 401]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function owner_can_bump_own_discussion()
     {
         // Enable manual bump
@@ -82,9 +82,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertEquals('1', $data['data']['id']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bump_respects_cooldown()
     {
         // Enable manual bump with 24 hour cooldown
@@ -115,9 +113,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertArrayHasKey('errors', $data);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function admin_bypasses_cooldown()
     {
         // Enable manual bump with cooldown
@@ -143,9 +139,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertEquals(200, $response2->getStatusCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bump_respects_daily_quota()
     {
         // Enable manual bump with daily quota of 1
@@ -172,9 +166,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertEquals(422, $response2->getStatusCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function manual_bump_disabled_returns_error()
     {
         // Disable manual bump
@@ -190,9 +182,7 @@ class ManualBumpApiTest extends TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bump_updates_discussion_timestamps()
     {
         // Enable manual bump
