@@ -2,20 +2,19 @@
 
 namespace HuseyinFiliz\Bump;
 
-use Flarum\Extend;
-use Flarum\Discussion\Discussion;
-use Flarum\User\User;
-use HuseyinFiliz\Bump\Access\BumpPolicy;
-use HuseyinFiliz\Bump\BumpQuota;
-use HuseyinFiliz\Bump\Listeners\HandlePostPosted;
-use HuseyinFiliz\Bump\Api\Controllers\ManualBumpController;
-use HuseyinFiliz\Bump\Api\Controllers\BumpStatsController;
-use HuseyinFiliz\Bump\Api\Controllers\ClearCacheController;
-use HuseyinFiliz\Bump\Api\DiscussionBumpFields;
-use HuseyinFiliz\Bump\Providers\BumpServiceProvider;
 use Flarum\Api\Context;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\DiscussionResource;
+use Flarum\Discussion\Discussion;
+use Flarum\Extend;
+use Flarum\User\User;
+use HuseyinFiliz\Bump\Access\BumpPolicy;
+use HuseyinFiliz\Bump\Api\Controllers\BumpStatsController;
+use HuseyinFiliz\Bump\Api\Controllers\ClearCacheController;
+use HuseyinFiliz\Bump\Api\Controllers\ManualBumpController;
+use HuseyinFiliz\Bump\Api\DiscussionBumpFields;
+use HuseyinFiliz\Bump\Listeners\HandlePostPosted;
+use HuseyinFiliz\Bump\Providers\BumpServiceProvider;
 
 return [
     (new Extend\Frontend('forum'))
@@ -112,7 +111,7 @@ return [
         // Quota
         ->default('huseyinfiliz-bump.owner-daily-quota', 0)
         ->default('huseyinfiliz-bump.owner-weekly-quota', 0)
-        
+
         ->serializeToForum('huseyinfiliz-bump.enable-manual-bump', 'huseyinfiliz-bump.enable-manual-bump', 'boolval')
         ->serializeToForum('huseyinfiliz-bump.manual-cooldown-hours', 'huseyinfiliz-bump.manual-cooldown-hours', 'intval'),
 ];

@@ -3,8 +3,8 @@
 namespace HuseyinFiliz\Bump\Api\Controllers;
 
 use Flarum\Http\RequestUtil;
-use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
+use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

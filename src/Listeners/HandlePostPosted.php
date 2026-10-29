@@ -4,7 +4,6 @@ namespace HuseyinFiliz\Bump\Listeners;
 
 use Flarum\Post\Event\Posted;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Carbon\Carbon;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -59,7 +58,7 @@ class HandlePostPosted
         // CHECK 1: Is bump absorber enabled?
         $absorberEnabled = (bool) $this->settings->get('huseyinfiliz-bump.enable-absorber', false);
 
-        if (!$absorberEnabled) {
+        if (! $absorberEnabled) {
             return;
         }
 
@@ -80,7 +79,7 @@ class HandlePostPosted
         // CHECK 4: Tag control
         $allowedTags = json_decode($this->settings->get('huseyinfiliz-bump.absorber-tags', '[]'), true);
 
-        if (!empty($allowedTags)) {
+        if (! empty($allowedTags)) {
             $discussionTags = $discussion->tags()->pluck('id')->toArray();
 
             // Discussion must have at least one allowed tag
@@ -92,7 +91,7 @@ class HandlePostPosted
         $lastBumpedAt = $discussion->last_bumped_at;
 
         // SPECIAL CASE: Never been bumped (first comment)
-        if (!$lastBumpedAt) {
+        if (! $lastBumpedAt) {
             // First bump - allow and set last_bumped_at
             $discussion->last_bumped_at = $post->created_at;
             $discussion->saveQuietly();
@@ -170,7 +169,6 @@ class HandlePostPosted
                     'post_id' => $post->id,
                 ]);
             }
-
         } else {
             // THRESHOLD PASSED - BUMP ALLOWED
             // Discussion is old enough, allow normal bumping behavior

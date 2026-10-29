@@ -3,13 +3,13 @@
 namespace HuseyinFiliz\Bump\Api\Controllers;
 
 use Flarum\Discussion\Discussion;
-use Flarum\Http\SlugManager;
 use Flarum\Http\RequestUtil;
+use Flarum\Http\SlugManager;
 use Flarum\Settings\SettingsRepositoryInterface;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
-use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class BumpStatsController implements RequestHandlerInterface

@@ -1,8 +1,6 @@
 <?php
 
 use Flarum\Database\Migration;
-use Flarum\Settings\SettingsRepositoryInterface;
-use Illuminate\Database\Schema\Builder;
 
 /**
  * Add default admin group overrides for bump settings.

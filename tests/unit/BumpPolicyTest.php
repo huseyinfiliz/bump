@@ -2,10 +2,10 @@
 
 namespace HuseyinFiliz\Bump\Tests\Unit;
 
+use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Testing\unit\TestCase;
 use HuseyinFiliz\Bump\Access\BumpPolicy;
 use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Mockery as m;
 
 class BumpPolicyTest extends TestCase

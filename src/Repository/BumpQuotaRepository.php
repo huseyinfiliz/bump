@@ -40,7 +40,7 @@ class BumpQuotaRepository
 
         // Kullanıcının kişisel kota önbelleğini temizle
         $this->invalidateQuotaCache($userId);
-        
+
         // DÜZELTME: Yeni bump atıldığında Admin panelindeki global istatistikleri de anında yenile
         $this->invalidateStatsCache();
 

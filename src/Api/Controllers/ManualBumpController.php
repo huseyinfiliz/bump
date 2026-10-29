@@ -2,12 +2,12 @@
 
 namespace HuseyinFiliz\Bump\Api\Controllers;
 
+use Carbon\Carbon;
 use Flarum\Api\Context;
 use Flarum\Discussion\Discussion;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Locale\Translator;
+use Flarum\Settings\SettingsRepositoryInterface;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
-use Carbon\Carbon;
 
 class ManualBumpController
 {
@@ -33,7 +33,7 @@ class ManualBumpController
         $isModerator = $this->resolver->canModerateBumps($actor);
 
         // If not moderator, check quota and cooldown using resolver
-        if (!$isModerator) {
+        if (! $isModerator) {
             // CHECK: Is bump disabled for this user's group?
             if ($this->resolver->isBumpDisabled($actor)) {
                 throw new \Flarum\Foundation\ValidationException([
@@ -95,7 +95,7 @@ class ManualBumpController
 
         // Record quota using repository (if not moderator)
         // This automatically invalidates the user's quota cache
-        if (!$isModerator) {
+        if (! $isModerator) {
             $this->repository->createBump($actor->id, $discussion->id, $now);
         }
 

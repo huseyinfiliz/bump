@@ -2,9 +2,9 @@
 
 namespace HuseyinFiliz\Bump\Services;
 
+use Flarum\Group\Group;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
-use Flarum\Group\Group;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
 class BumpSettingsResolver
@@ -35,9 +35,9 @@ class BumpSettingsResolver
      * @param User $user
      * @return int Cooldown in hours (0 = unlimited, -1 = disabled)
      */
-    public function getCooldown(User $user): int 
-    { 
-        return $this->resolveForUser($user, 'manual', 'cooldown', 'manual-cooldown-hours'); 
+    public function getCooldown(User $user): int
+    {
+        return $this->resolveForUser($user, 'manual', 'cooldown', 'manual-cooldown-hours');
     }
 
     /**
@@ -46,9 +46,9 @@ class BumpSettingsResolver
      * @param User $user
      * @return int Quota (0 = unlimited, -1 = disabled)
      */
-    public function getDailyQuota(User $user): int 
-    { 
-        return $this->resolveForUser($user, 'manual', 'daily', 'owner-daily-quota'); 
+    public function getDailyQuota(User $user): int
+    {
+        return $this->resolveForUser($user, 'manual', 'daily', 'owner-daily-quota');
     }
 
     /**
@@ -57,30 +57,30 @@ class BumpSettingsResolver
      * @param User $user
      * @return int Quota (0 = unlimited, -1 = disabled)
      */
-    public function getWeeklyQuota(User $user): int 
-    { 
-        return $this->resolveForUser($user, 'manual', 'weekly', 'owner-weekly-quota'); 
+    public function getWeeklyQuota(User $user): int
+    {
+        return $this->resolveForUser($user, 'manual', 'weekly', 'owner-weekly-quota');
     }
-    
+
     /**
      * Get absorber threshold hours for a user.
      *
      * @param User $user
      * @return int Threshold in hours (0 = bypass absorber)
      */
-    public function getThreshold(User $user): int 
-    { 
-        return max(0, $this->resolveForUser($user, 'absorber', 'threshold', 'threshold-hours')); 
+    public function getThreshold(User $user): int
+    {
+        return max(0, $this->resolveForUser($user, 'absorber', 'threshold', 'threshold-hours'));
     }
 
     protected function resolveForUser(User $user, string $type, string $key, string $fallbackKey): int
     {
         $groups = collect($user->permissionGroupIds())->reject(fn ($id) => $id === Group::GUEST_ID);
-        
-        if ($groups->isEmpty() && !$user->isGuest()) {
+
+        if ($groups->isEmpty() && ! $user->isGuest()) {
             return (int) $this->settings->get("huseyinfiliz-bump.{$fallbackKey}", 0);
         }
-        
+
         $groupIds = $groups->sort()->implode(',');
         $version = $this->getCacheVersion();
         $cacheKey = "bump:groups:{$version}:{$groupIds}:{$type}:{$key}";
@@ -110,15 +110,16 @@ class BumpSettingsResolver
             }
 
             // Absorber için tehlike yaratan -1 değerlerini filtrele
-            $validValues = array_filter($values, function($v) { return $v !== -1; });
-            
+            $validValues = array_filter($values, function ($v) { return $v !== -1; });
+
             if (empty($validValues)) {
-                 return (int) $this->settings->get("huseyinfiliz-bump.{$fallbackKey}", 0);
+                return (int) $this->settings->get("huseyinfiliz-bump.{$fallbackKey}", 0);
             }
 
             if ($key === 'cooldown' || $key === 'threshold') {
                 return min($validValues);
             }
+
             return max($validValues);
         });
     }
@@ -136,9 +137,9 @@ class BumpSettingsResolver
      * @param User $user
      * @return bool
      */
-    public function hasUnlimitedBumps(User $user): bool 
-    { 
-        return $this->getDailyQuota($user) === 0 && $this->getWeeklyQuota($user) === 0; 
+    public function hasUnlimitedBumps(User $user): bool
+    {
+        return $this->getDailyQuota($user) === 0 && $this->getWeeklyQuota($user) === 0;
     }
 
     /**
@@ -147,9 +148,9 @@ class BumpSettingsResolver
      * @param User $user
      * @return bool
      */
-    public function canBypassAbsorber(User $user): bool 
-    { 
-        return $this->getThreshold($user) === 0; 
+    public function canBypassAbsorber(User $user): bool
+    {
+        return $this->getThreshold($user) === 0;
     }
 
     /**
@@ -158,9 +159,9 @@ class BumpSettingsResolver
      * @param User $user
      * @return bool
      */
-    public function isBumpDisabled(User $user): bool 
-    { 
-        return $this->getCooldown($user) === -1 || $this->getDailyQuota($user) === -1 || $this->getWeeklyQuota($user) === -1; 
+    public function isBumpDisabled(User $user): bool
+    {
+        return $this->getCooldown($user) === -1 || $this->getDailyQuota($user) === -1 || $this->getWeeklyQuota($user) === -1;
     }
 
     /**
@@ -172,9 +173,11 @@ class BumpSettingsResolver
     public function canModerateBumps(User $user): bool
     {
         $moderatorGroups = json_decode($this->settings->get('huseyinfiliz-bump.moderator-groups', '[]'), true) ?: [];
-        if (empty($moderatorGroups)) return false;
+        if (empty($moderatorGroups)) {
+            return false;
+        }
 
-        return !$user->isGuest() && !empty(array_intersect($moderatorGroups, $user->permissionGroupIds()));
+        return ! $user->isGuest() && ! empty(array_intersect($moderatorGroups, $user->permissionGroupIds()));
     }
 
     /**
@@ -186,8 +189,10 @@ class BumpSettingsResolver
     public function canBypassAbsorberGlobally(User $user): bool
     {
         $bypassGroups = json_decode($this->settings->get('huseyinfiliz-bump.absorber-bypass-groups', '[]'), true) ?: [];
-        if (empty($bypassGroups)) return false;
+        if (empty($bypassGroups)) {
+            return false;
+        }
 
-        return !$user->isGuest() && !empty(array_intersect($bypassGroups, $user->permissionGroupIds()));
+        return ! $user->isGuest() && ! empty(array_intersect($bypassGroups, $user->permissionGroupIds()));
     }
 }
