@@ -18,33 +18,10 @@ use Psr\Log\LoggerInterface;
 class HandlePostPosted
 {
     /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var \HuseyinFiliz\Bump\Services\BumpSettingsResolver
-     */
-    protected $resolver;
-
-    /**
-     * @param SettingsRepositoryInterface $settings
-     * @param LoggerInterface $logger
      * @param \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver
      */
-    public function __construct(
-        SettingsRepositoryInterface $settings,
-        LoggerInterface $logger,
-        \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver
-    ) {
-        $this->settings = $settings;
-        $this->logger = $logger;
-        $this->resolver = $resolver;
+    public function __construct(protected SettingsRepositoryInterface $settings, protected LoggerInterface $logger, protected \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver)
+    {
     }
 
     /**
@@ -133,7 +110,7 @@ class HandlePostPosted
 
         // CRITICAL FIX: Check discussion AGE, not time since last bump
         // This prevents manual bumps from being incorrectly reverted
-        $hoursSinceCreation = $currentPostTime->diffInHours($discussion->created_at);
+        $hoursSinceCreation = $currentPostTime->diffInHours($discussion->created_at, true);
 
         // Is discussion still within threshold period?
         if ($hoursSinceCreation < $thresholdHours) {

@@ -17,21 +17,8 @@ class ManualBumpController extends AbstractShowController
 {
     public $serializer = \Flarum\Api\Serializer\DiscussionSerializer::class;
 
-    protected $settings;
-    protected $translator;
-    protected $repository;
-    protected $resolver;
-
-    public function __construct(
-        SettingsRepositoryInterface $settings,
-        Translator $translator,
-        BumpQuotaRepository $repository,
-        \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver
-    ) {
-        $this->settings = $settings;
-        $this->translator = $translator;
-        $this->repository = $repository;
-        $this->resolver = $resolver;
+    public function __construct(protected SettingsRepositoryInterface $settings, protected Translator $translator, protected BumpQuotaRepository $repository, protected \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver)
+    {
     }
 
     protected function data(ServerRequestInterface $request, Document $document)
@@ -66,7 +53,7 @@ class ManualBumpController extends AbstractShowController
             $lastManualBump = $this->repository->getLastManualBump($actor->id, $discussion->id);
 
             if ($lastManualBump && $cooldownHours > 0) {
-                $hoursSinceLastBump = $now->diffInHours($lastManualBump->bumped_at);
+                $hoursSinceLastBump = $now->diffInHours($lastManualBump->bumped_at, true);
 
                 if ($hoursSinceLastBump < $cooldownHours) {
                     $hoursRemaining = ceil($cooldownHours - $hoursSinceLastBump);

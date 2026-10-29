@@ -8,26 +8,8 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 
 class BumpSettingsResolver
 {
-    /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
-     * @var Cache
-     */
-    protected $cache;
-
-    const CACHE_TTL = 3600; // 1 hour
-
-    /**
-     * @param SettingsRepositoryInterface $settings
-     * @param Cache $cache
-     */
-    public function __construct(SettingsRepositoryInterface $settings, Cache $cache)
+    const CACHE_TTL = 3600; public function __construct(protected SettingsRepositoryInterface $settings, protected Cache $cache)
     {
-        $this->settings = $settings;
-        $this->cache = $cache;
     }
 
     protected function getCacheVersion(): string

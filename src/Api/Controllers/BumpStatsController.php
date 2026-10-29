@@ -13,15 +13,8 @@ class BumpStatsController extends AbstractShowController
 {
     public $serializer = 'HuseyinFiliz\Bump\Api\Serializer\BumpStatsSerializer';
 
-    protected $settings;
-    protected $repository;
-
-    public function __construct(
-        SettingsRepositoryInterface $settings,
-        BumpQuotaRepository $repository
-    ) {
-        $this->settings = $settings;
-        $this->repository = $repository;
+    public function __construct(protected SettingsRepositoryInterface $settings, protected BumpQuotaRepository $repository)
+    {
     }
 
     protected function data(ServerRequestInterface $request, Document $document): array

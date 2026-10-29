@@ -12,20 +12,8 @@ class BumpQuotaRepository
     const QUOTA_CACHE_TTL = 60;
     const STATS_CACHE_TTL = 300;
 
-    /**
-     * @var CacheRepository
-     */
-    protected $cache;
-
-    /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    public function __construct(CacheRepository $cache, SettingsRepositoryInterface $settings)
+    public function __construct(protected CacheRepository $cache, protected SettingsRepositoryInterface $settings)
     {
-        $this->cache = $cache;
-        $this->settings = $settings;
     }
 
     public function getQuotaCounts(int $userId): object

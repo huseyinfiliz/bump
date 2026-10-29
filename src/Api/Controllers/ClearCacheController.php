@@ -18,26 +18,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class ClearCacheController implements RequestHandlerInterface
 {
-    /**
-     * @var BumpSettingsResolver
-     */
-    protected $resolver;
-
-    /**
-     * @var BumpQuotaRepository
-     */
-    protected $repository;
-
-    /**
-     * @param BumpSettingsResolver $resolver
-     * @param BumpQuotaRepository $repository
-     */
-    public function __construct(
-        BumpSettingsResolver $resolver,
-        BumpQuotaRepository $repository
-    ) {
-        $this->resolver = $resolver;
-        $this->repository = $repository;
+    public function __construct(protected BumpSettingsResolver $resolver, protected BumpQuotaRepository $repository)
+    {
     }
 
     /**

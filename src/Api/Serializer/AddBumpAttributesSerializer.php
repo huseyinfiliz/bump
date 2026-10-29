@@ -15,42 +15,8 @@ use Psr\Log\LoggerInterface;
  */
 class AddBumpAttributesSerializer
 {
-    /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
-     * @var BumpQuotaRepository
-     */
-    protected $repository;
-
-    /**
-     * @var BumpSettingsResolver
-     */
-    protected $resolver;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @param SettingsRepositoryInterface $settings
-     * @param BumpQuotaRepository $repository
-     * @param BumpSettingsResolver $resolver
-     * @param LoggerInterface $logger
-     */
-    public function __construct(
-        SettingsRepositoryInterface $settings,
-        BumpQuotaRepository $repository,
-        BumpSettingsResolver $resolver,
-        LoggerInterface $logger
-    ) {
-        $this->settings = $settings;
-        $this->repository = $repository;
-        $this->resolver = $resolver;
-        $this->logger = $logger;
+    public function __construct(protected SettingsRepositoryInterface $settings, protected BumpQuotaRepository $repository, protected BumpSettingsResolver $resolver, protected LoggerInterface $logger)
+    {
     }
 
     public function __invoke(DiscussionSerializer $serializer, $discussion, array $attributes): array

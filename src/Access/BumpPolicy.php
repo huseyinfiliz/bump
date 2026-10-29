@@ -10,15 +10,8 @@ use HuseyinFiliz\Bump\Services\BumpSettingsResolver;
 
 class BumpPolicy extends AbstractPolicy
 {
-    protected $settings;
-    protected $resolver;
-
-    public function __construct(
-        SettingsRepositoryInterface $settings,
-        BumpSettingsResolver $resolver
-    ) {
-        $this->settings = $settings;
-        $this->resolver = $resolver;
+    public function __construct(protected SettingsRepositoryInterface $settings, protected BumpSettingsResolver $resolver)
+    {
     }
 
     public function bump(User $actor, Discussion $discussion)
