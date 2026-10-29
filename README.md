@@ -17,6 +17,16 @@ A powerful discussion bumping system for [Flarum](https://flarum.org) forums. Al
 ### 📈 Recent Activity
 ![Demo](https://i.ibb.co/7dW5Gdq0/image.png)
 
+## Compatibility
+
+| Branch | Flarum | PHP |
+| --- | --- | --- |
+| `1.x` | Flarum 1.x | As required by Flarum 1.x |
+| `2.x` | Flarum 2.0.2 and newer 2.x releases | PHP 8.3+ |
+
+The `2.x` branch uses Flarum 2's resource API. Manual bumps use
+`POST /api/discussions/{id}/bump` and return the updated discussion.
+
 ## Features
 
 - 🔄 **Manual Bumping**: Users can bump discussions to bring them back to the top

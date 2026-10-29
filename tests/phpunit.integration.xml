@@ -7,7 +7,7 @@
     backupStaticProperties="false"
     colors="true"
     displayDetailsOnTestsThatTriggerWarnings="true"
-    processIsolation="false"
+    processIsolation="true"
     stopOnFailure="false"
 >
     <source>

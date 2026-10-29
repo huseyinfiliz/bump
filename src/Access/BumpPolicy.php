@@ -16,6 +16,10 @@ class BumpPolicy extends AbstractPolicy
 
     public function bump(User $actor, Discussion $discussion)
     {
+        if ($actor->isGuest()) {
+            return $this->deny();
+        }
+
         // CHECK 1: Manual bump enabled globally?
         if (!$this->settings->get('huseyinfiliz-bump.enable-manual-bump', true)) {
             return $this->deny();

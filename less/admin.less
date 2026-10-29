@@ -30,7 +30,7 @@
   justify-content: center;
   background: @bg-color;
   border-radius: @card-radius-sm;
-  color: var(--text-color);
+  color: @text-color;
   flex-shrink: 0;
 }
 
@@ -426,7 +426,7 @@
     color: var(--muted-color);
     font-weight: 600;
     padding: 6px 12px;
-    background: fade(@control-bg, 30%);
+    background: var(--control-bg-fade-30);
     border-radius: 16px;
   }
 
@@ -554,7 +554,7 @@
       align-items: center;
       gap: 5px;
       padding: 4px 10px;
-      background: fade(@control-bg, 30%);
+      background: var(--control-bg-fade-30);
       border-radius: 12px;
 
       i {
@@ -659,7 +659,7 @@
 
     &-icon {
       margin-bottom: 20px;
-      .icon-container(80px; fade(@control-bg, 30%); @muted-color);
+      .icon-container(80px; var(--control-bg-fade-30); var(--muted-color));
       border-radius: 50%;
       position: relative;
       box-shadow: @shadow-md;
@@ -885,7 +885,7 @@
           border: 1px solid transparent;
 
           &:hover {
-            background: fade(@control-bg, 50%);
+            background: var(--control-bg-fade-50);
             border-color: var(--control-bg);
             transform: translateY(-1px);
           }
@@ -918,7 +918,7 @@
       background: var(--control-bg-fade-5);
       border-radius: @card-radius-sm;
       padding: 16px;
-      border: 1px solid fade(@control-bg, 50%);
+      border: 1px solid var(--control-bg-fade-50);
 
       h4 {
         font-size: 13px;
@@ -954,13 +954,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 12px;
-    background: fade(@control-bg, 15%);
+    background: var(--control-bg-fade-15);
     border-radius: @card-radius-sm;
     gap: 12px;
     transition: background @transition-speed ease;
 
     &:hover {
-      background: fade(@control-bg, 25%);
+      background: var(--control-bg-fade-25);
     }
 
     &-label {
@@ -1043,7 +1043,7 @@
     border: 1px solid var(--control-bg);
     border-radius: @card-radius-sm;
     margin-bottom: 20px;
-    background: fade(@control-bg, 5%);
+    background: var(--control-bg-fade-5);
   }
 
   .SelectGroups-item {
@@ -1155,7 +1155,7 @@
   padding: 8px;
   border: 1px solid var(--control-bg);
   border-radius: @card-radius-sm;
-  background: fade(@control-bg, 5%);
+  background: var(--control-bg-fade-5);
   margin-bottom: 12px;
 
   .SelectGroups-badge {

@@ -8,6 +8,7 @@ use Flarum\Post\Post;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
+use HuseyinFiliz\Bump\BumpQuota;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -52,7 +53,7 @@ class ManualBumpApiTest extends TestCase
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.enable-manual-bump', true);
 
         $response = $this->send(
-            $this->request('POST', '/api/manual-bump/1')
+            $this->request('POST', '/api/discussions/1/bump')
         );
 
         // Guests should not be able to bump (400 or 401 both acceptable)
@@ -66,7 +67,7 @@ class ManualBumpApiTest extends TestCase
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.enable-manual-bump', true);
 
         $response = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2, // Discussion owner
             ])
         );
@@ -91,7 +92,7 @@ class ManualBumpApiTest extends TestCase
 
         // First bump - should succeed
         $response1 = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -100,7 +101,7 @@ class ManualBumpApiTest extends TestCase
 
         // Second bump immediately - should fail due to cooldown
         $response2 = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -119,10 +120,11 @@ class ManualBumpApiTest extends TestCase
         // Enable manual bump with cooldown
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.enable-manual-bump', true);
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.manual-cooldown-hours', 24);
+        $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.moderator-groups', '["1"]');
 
         // Admin first bump
         $response1 = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 1, // Admin
             ])
         );
@@ -131,7 +133,7 @@ class ManualBumpApiTest extends TestCase
 
         // Admin second bump immediately - should succeed (bypass)
         $response2 = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 1, // Admin
             ])
         );
@@ -149,7 +151,7 @@ class ManualBumpApiTest extends TestCase
 
         // First bump - should succeed
         $response1 = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -158,7 +160,7 @@ class ManualBumpApiTest extends TestCase
 
         // Second bump on different discussion - should fail due to daily quota
         $response2 = $this->send(
-            $this->request('POST', '/api/manual-bump/2', [
+            $this->request('POST', '/api/discussions/2/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -173,7 +175,7 @@ class ManualBumpApiTest extends TestCase
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.enable-manual-bump', false);
 
         $response = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -189,7 +191,7 @@ class ManualBumpApiTest extends TestCase
         $this->app()->getContainer()->make('flarum.settings')->set('huseyinfiliz-bump.enable-manual-bump', true);
 
         $response = $this->send(
-            $this->request('POST', '/api/manual-bump/1', [
+            $this->request('POST', '/api/discussions/1/bump', [
                 'authenticatedAs' => 2,
             ])
         );
@@ -203,5 +205,68 @@ class ManualBumpApiTest extends TestCase
 
         // The discussion should now have updated timestamps
         $this->assertIsArray($data['data']['attributes']);
+    }
+
+    #[Test]
+    public function member_group_override_disables_bumps_without_explicit_membership()
+    {
+        $this->setting('huseyinfiliz-bump.group-overrides-manual', '{"3":{"cooldown":-1}}');
+
+        $response = $this->send($this->request('POST', '/api/discussions/1/bump', ['authenticatedAs' => 2]));
+
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(0, BumpQuota::count());
+    }
+
+    #[Test]
+    public function expired_cooldown_allows_bumping_with_carbon_three()
+    {
+        $this->setting('huseyinfiliz-bump.manual-cooldown-hours', 24);
+        $this->app();
+        BumpQuota::create(['user_id' => 2, 'discussion_id' => 1, 'bumped_at' => Carbon::now()->subHours(25)]);
+
+        $response = $this->send($this->request('POST', '/api/discussions/1/bump', ['authenticatedAs' => 2]));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(2, BumpQuota::count());
+    }
+
+    #[Test]
+    public function weekly_quota_applies_across_discussions()
+    {
+        $this->setting('huseyinfiliz-bump.owner-weekly-quota', 1);
+        $this->setting('huseyinfiliz-bump.manual-cooldown-hours', 0);
+
+        $first = $this->send($this->request('POST', '/api/discussions/1/bump', ['authenticatedAs' => 2]));
+        $second = $this->send($this->request('POST', '/api/discussions/2/bump', ['authenticatedAs' => 2]));
+
+        $this->assertEquals(200, $first->getStatusCode());
+        $this->assertEquals(422, $second->getStatusCode());
+        $this->assertEquals(1, BumpQuota::count());
+    }
+
+    #[Test]
+    public function discussion_list_serializes_actor_bump_and_quota_fields()
+    {
+        $this->setting('huseyinfiliz-bump.owner-daily-quota', 2);
+        $this->send($this->request('POST', '/api/discussions/1/bump', ['authenticatedAs' => 2]));
+
+        $response = $this->send($this->request('GET', '/api/discussions', ['authenticatedAs' => 2]));
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getBody(), true)['data'];
+        $discussions = array_column($data, 'attributes', 'id');
+
+        $this->assertNotNull($discussions[1]['lastManualBumpedAt']);
+        $this->assertNull($discussions[2]['lastManualBumpedAt']);
+        $this->assertEquals(['used' => 1, 'limit' => 2, 'remaining' => 1], $discussions[1]['dailyBumpQuota']);
+    }
+
+    #[Test]
+    public function stats_and_cache_clear_require_admin()
+    {
+        $this->assertEquals(403, $this->send($this->request('GET', '/api/bump/stats', ['authenticatedAs' => 2]))->getStatusCode());
+        $this->assertEquals(403, $this->send($this->request('POST', '/api/bump/clear-cache', ['authenticatedAs' => 2]))->getStatusCode());
+        $this->assertEquals(200, $this->send($this->request('GET', '/api/bump/stats', ['authenticatedAs' => 1]))->getStatusCode());
+        $this->assertEquals(204, $this->send($this->request('POST', '/api/bump/clear-cache', ['authenticatedAs' => 1]))->getStatusCode());
     }
 }

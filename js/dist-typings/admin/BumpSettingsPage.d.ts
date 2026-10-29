@@ -1,4 +1,3 @@
-/// <reference types="mithril" />
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 export default class BumpSettingsPage extends ExtensionPage {
     activeTab: string;
@@ -7,7 +6,7 @@ export default class BumpSettingsPage extends ExtensionPage {
     recentBumps: any[];
     groupOverridesDirty: boolean;
     oninit(vnode: any): void;
-    isChanged(): any;
+    isChanged(): number;
     onsaved(): void;
     content(): JSX.Element;
     tabs(): JSX.Element;

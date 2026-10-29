@@ -13,8 +13,9 @@
     "type": "flarum-extension",
     "license": "MIT",
     "require": {
-        "flarum/core": "^2.0.0",
-        "flarum/tags": "*"
+        "php": "^8.3",
+        "flarum/core": "^2.0.2",
+        "flarum/tags": "^2.0"
     },
     "authors": [
         {

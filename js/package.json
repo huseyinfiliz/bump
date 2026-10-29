@@ -5,7 +5,7 @@
     "devDependencies": {
         "flarum-webpack-config": "^3.1.0",
         "webpack": "^5.104.1",
-        "webpack-cli": "^7.2.3",
+        "webpack-cli": "^6.0.1",
         "prettier": "^3.9.10",
         "@flarum/prettier-config": "^1.0.0",
         "flarum-tsconfig": "^2.0.0",
@@ -15,11 +15,11 @@
     "scripts": {
         "dev": "webpack --mode development --watch",
         "build": "webpack --mode production",
-        "analyze": "cross-env ANALYZER=true npm run build",
+        "analyze": "webpack --mode production --json > stats.json",
         "format": "prettier --write src",
         "format-check": "prettier --check src",
-        "clean-typings": "npx rimraf dist-typings && mkdir dist-typings",
-        "build-typings": "npm run clean-typings && ([ -e src/@types ] && cp -r src/@types dist-typings/@types || true) && tsc && npm run post-build-typings",
+        "clean-typings": "node -e \"require('fs').rmSync('dist-typings', { recursive: true, force: true }); require('fs').mkdirSync('dist-typings');\"",
+        "build-typings": "yarn clean-typings && tsc && yarn post-build-typings",
         "post-build-typings": "find dist-typings -type f -name '*.d.ts' -print0 | xargs -0 sed -i.bak 's,../src/@types,@types,g' && find dist-typings -type f -name '*.d.ts.bak' -delete",
         "check-typings": "tsc --noEmit --emitDeclarationOnly false",
         "check-typings-coverage": "typescript-coverage-report"

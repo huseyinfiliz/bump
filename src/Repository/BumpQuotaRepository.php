@@ -47,6 +47,7 @@ class BumpQuotaRepository
         return $bump;
     }
 
+    /** @return \Illuminate\Database\Eloquent\Collection<int, BumpQuota> */
     public function getRecentBumps(int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
         $cacheKey = "bump_recent_bumps_{$limit}";

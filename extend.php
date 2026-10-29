@@ -11,11 +11,11 @@ use HuseyinFiliz\Bump\Listeners\HandlePostPosted;
 use HuseyinFiliz\Bump\Api\Controllers\ManualBumpController;
 use HuseyinFiliz\Bump\Api\Controllers\BumpStatsController;
 use HuseyinFiliz\Bump\Api\Controllers\ClearCacheController;
-use HuseyinFiliz\Bump\Api\Serializer\AddBumpAttributesSerializer;
+use HuseyinFiliz\Bump\Api\DiscussionBumpFields;
 use HuseyinFiliz\Bump\Providers\BumpServiceProvider;
-use Flarum\Api\Controller\ListDiscussionsController;
-use Flarum\Http\RequestUtil;
-use Illuminate\Support\Collection;
+use Flarum\Api\Context;
+use Flarum\Api\Endpoint;
+use Flarum\Api\Resource\DiscussionResource;
 
 return [
     (new Extend\Frontend('forum'))
@@ -54,23 +54,25 @@ return [
         ->listen(\Flarum\Post\Event\Posted::class, HandlePostPosted::class),
 
     (new Extend\Routes('api'))
-        ->post('/manual-bump/{id}', 'huseyinfiliz-bump.manual', ManualBumpController::class)
         ->get('/bump/stats', 'bump.stats', BumpStatsController::class)
         ->post('/bump/clear-cache', 'bump.clear-cache', ClearCacheController::class),
 
-    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
-    (new Extend\ApiController(ListDiscussionsController::class))
-        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
-            $actor = RequestUtil::getActor($request);
+    (new Extend\ApiResource(DiscussionResource::class))
+        ->fields(DiscussionBumpFields::class)
+        ->endpoints(fn () => [
+            Endpoint\Endpoint::make('bump')
+                ->route('POST', '/{id}/bump')
+                ->authenticated()
+                ->action(fn (Context $context) => resolve(ManualBumpController::class)($context)),
+        ])
+        ->endpoint('index', fn (Endpoint\Index $endpoint) => $endpoint->beforeSerialization(function (Context $context, $data) {
+            $actor = $context->getActor();
 
             if ($actor->isGuest()) {
                 return;
             }
 
-            // Flarum 1.x defansif Collection dönüşümü
-            $discussions = collect(
-                is_object($data) && method_exists($data, 'getResults') ? $data->getResults() : (is_iterable($data) ? $data : [])
-            );
+            $discussions = collect($data['models']);
 
             $discussionIds = $discussions->pluck('id')->filter()->values()->all();
 
@@ -92,7 +94,7 @@ return [
                     optional($actorBumps->get($discussion->id))->last_bumped_at
                 );
             }
-        }),
+        })),
 
     (new Extend\Settings())
         // Absorber
@@ -113,9 +115,4 @@ return [
         
         ->serializeToForum('huseyinfiliz-bump.enable-manual-bump', 'huseyinfiliz-bump.enable-manual-bump', 'boolval')
         ->serializeToForum('huseyinfiliz-bump.manual-cooldown-hours', 'huseyinfiliz-bump.manual-cooldown-hours', 'intval'),
-
-    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
-    (new Extend\ApiSerializer(\Flarum\Api\Serializer\DiscussionSerializer::class))
-        ->attributes(AddBumpAttributesSerializer::class),
-    new Extend\ApiResource(Api\Resource\BumpStatsResource::class),
 ];

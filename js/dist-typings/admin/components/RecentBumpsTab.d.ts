@@ -1,4 +1,3 @@
-/// <reference types="mithril" />
 import Component, { ComponentAttrs } from 'flarum/common/Component';
 interface RecentBumpsTabAttrs extends ComponentAttrs {
     recentBumps: any[];

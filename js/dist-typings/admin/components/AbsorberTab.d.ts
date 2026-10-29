@@ -1,4 +1,3 @@
-/// <reference types="mithril" />
 import Component, { ComponentAttrs } from 'flarum/common/Component';
 import Group from 'flarum/common/models/Group';
 interface AbsorberTabAttrs extends ComponentAttrs {

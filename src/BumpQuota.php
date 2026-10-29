@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Carbon $bumped_at
  * @property User $user
  * @property Discussion $discussion
+ * @property-read int $daily_count Aggregate selected by getQuotaCounts()
+ * @property-read int $weekly_count Aggregate selected by getQuotaCounts()
  */
 class BumpQuota extends AbstractModel
 {
@@ -38,7 +40,7 @@ class BumpQuota extends AbstractModel
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'bumped_at' => 'datetime',
@@ -47,7 +49,7 @@ class BumpQuota extends AbstractModel
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = ['user_id', 'discussion_id', 'bumped_at'];
 

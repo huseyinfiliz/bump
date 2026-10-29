@@ -4,6 +4,7 @@ import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
 import Button from 'flarum/common/components/Button';
 import Discussion from 'flarum/common/models/Discussion';
 import humanTime from 'flarum/common/helpers/humanTime';
+import type { ApiPayloadSingle } from 'flarum/common/Store';
 
 app.initializers.add('huseyinfiliz/bump', () => {
   extend(DiscussionControls, 'moderationControls', function (items, discussion: Discussion) {
@@ -114,12 +115,13 @@ app.initializers.add('huseyinfiliz/bump', () => {
                 app.alerts.clear();
 
                 app
-                  .request({
+                  .request<ApiPayloadSingle>({
                     method: 'POST',
-                    url: app.forum.attribute('apiUrl') + '/manual-bump/' + discussion.id(),
+                    url: app.forum.attribute('apiUrl') + '/discussions/' + discussion.id() + '/bump',
                   })
                   .then(
-                    () => {
+                    (response) => {
+                      app.store.pushPayload(response);
                       app.discussions.refresh();
                       m.redraw();
 

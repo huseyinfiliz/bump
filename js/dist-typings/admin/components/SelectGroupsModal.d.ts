@@ -1,15 +1,15 @@
-/// <reference types="mithril" />
-import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
+import { IFormModalAttrs } from 'flarum/common/components/FormModal';
+import FormModal from 'flarum/common/components/FormModal';
 import Group from 'flarum/common/models/Group';
-interface SelectGroupsModalAttrs extends IInternalModalAttrs {
+interface SelectGroupsModalAttrs extends IFormModalAttrs {
     selectedGroupIds: string[];
     onsubmit: (selectedGroupIds: string[]) => void;
 }
-export default class SelectGroupsModal extends Modal<SelectGroupsModalAttrs> {
+export default class SelectGroupsModal extends FormModal<SelectGroupsModalAttrs> {
     selectedGroupIds: Set<string>;
     oninit(vnode: any): void;
     className(): string;
-    title(): any;
+    title(): string | any[];
     content(): JSX.Element;
     groupItem(group: Group): JSX.Element;
     onsubmit(e: Event): void;

@@ -2,36 +2,27 @@
 
 namespace HuseyinFiliz\Bump\Api\Controllers;
 
-use Flarum\Api\Controller\AbstractShowController;
+use Flarum\Api\Context;
 use Flarum\Discussion\Discussion;
-use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Locale\Translator;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
-use Illuminate\Support\Arr;
-use Psr\Http\Message\ServerRequestInterface;
-use Tobscure\JsonApi\Document;
 use Carbon\Carbon;
 
-/**
- * @TODO: Remove this in favor of one of the API resource classes that were added.
- *      Or extend an existing API Resource to add this to.
- *      Or use a vanilla RequestHandlerInterface controller.
- *      @link https://docs.flarum.org/2.x/extend/api#endpoints
- */
-class ManualBumpController extends AbstractShowController
+class ManualBumpController
 {
-    public $serializer = \Flarum\Api\Serializer\DiscussionSerializer::class;
-
-    public function __construct(protected SettingsRepositoryInterface $settings, protected Translator $translator, protected BumpQuotaRepository $repository, protected \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver)
-    {
+    public function __construct(
+        protected SettingsRepositoryInterface $settings,
+        protected Translator $translator,
+        protected BumpQuotaRepository $repository,
+        protected \HuseyinFiliz\Bump\Services\BumpSettingsResolver $resolver
+    ) {
     }
 
-    protected function data(ServerRequestInterface $request, Document $document)
+    public function __invoke(Context $context): Discussion
     {
-        $actor = RequestUtil::getActor($request);
-        $discussionId = Arr::get($request->getQueryParams(), 'id');
-        $discussion = Discussion::findOrFail($discussionId);
+        $actor = $context->getActor();
+        $discussion = $context->model;
 
         // Permission check (BumpPolicy handles everything)
         $actor->assertCan('bump', $discussion);

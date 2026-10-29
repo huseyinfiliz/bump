@@ -2,28 +2,26 @@
 
 namespace HuseyinFiliz\Bump\Api\Controllers;
 
-use Flarum\Api\Controller\AbstractShowController;
+use Flarum\Discussion\Discussion;
+use Flarum\Http\SlugManager;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
 use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
 use Psr\Http\Message\ServerRequestInterface;
-use Tobscure\JsonApi\Document;
+use Laminas\Diactoros\Response\JsonResponse;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * @TODO: Remove this in favor of one of the API resource classes that were added.
- *      Or extend an existing API Resource to add this to.
- *      Or use a vanilla RequestHandlerInterface controller.
- *      @link https://docs.flarum.org/2.x/extend/api#endpoints
- */
-class BumpStatsController extends AbstractShowController
+class BumpStatsController implements RequestHandlerInterface
 {
-    public $serializer = 'HuseyinFiliz\Bump\Api\Serializer\BumpStatsSerializer';
-
-    public function __construct(protected SettingsRepositoryInterface $settings, protected BumpQuotaRepository $repository)
-    {
+    public function __construct(
+        protected SettingsRepositoryInterface $settings,
+        protected BumpQuotaRepository $repository,
+        protected SlugManager $slugManager
+    ) {
     }
 
-    protected function data(ServerRequestInterface $request, Document $document): array
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $actor = RequestUtil::getActor($request);
 
@@ -35,15 +33,15 @@ class BumpStatsController extends AbstractShowController
 
         // Prepare statistics using repository (all cached for 5 minutes)
         $stats = [
-            'total_bumps' => $this->repository->getTotalBumpCount(),
-            'today_bumps' => $this->repository->getDailyBumpCount(),
-            'week_bumps' => $this->repository->getWeeklyBumpCount(),
-            'absorber_active' => $absorberEnabled,
-            'last_bump_date' => $this->getLastBumpDate(),
-            'recent_bumps' => $this->getRecentBumps(10),
+            'totalBumps' => $this->repository->getTotalBumpCount(),
+            'todayBumps' => $this->repository->getDailyBumpCount(),
+            'weekBumps' => $this->repository->getWeeklyBumpCount(),
+            'absorberActive' => $absorberEnabled,
+            'lastBumpDate' => $this->getLastBumpDate(),
+            'recentBumps' => $this->getRecentBumps(10),
         ];
 
-        return $stats;
+        return new JsonResponse($stats);
     }
 
     protected function getLastBumpDate(): ?string
@@ -65,7 +63,7 @@ class BumpStatsController extends AbstractShowController
                 'id' => $bump->id,
                 'discussion_id' => $bump->discussion_id,
                 'discussion_title' => $bump->discussion?->title,
-                'discussion_slug' => $bump->discussion?->slug,
+                'discussion_slug' => $bump->discussion ? $this->slugManager->forResource(Discussion::class)->toSlug($bump->discussion) : null,
                 'user_id' => $bump->user_id,
                 'username' => $bump->user?->username,
                 'type' => 'manual', // user_bump_quota only stores manual bumps

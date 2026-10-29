@@ -4,11 +4,14 @@ namespace HuseyinFiliz\Bump\Services;
 
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
+use Flarum\Group\Group;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
 class BumpSettingsResolver
 {
-    const CACHE_TTL = 3600; public function __construct(protected SettingsRepositoryInterface $settings, protected Cache $cache)
+    const CACHE_TTL = 3600;
+
+    public function __construct(protected SettingsRepositoryInterface $settings, protected Cache $cache)
     {
     }
 
@@ -72,13 +75,13 @@ class BumpSettingsResolver
 
     protected function resolveForUser(User $user, string $type, string $key, string $fallbackKey): int
     {
-        $groups = $user->groups;
+        $groups = collect($user->permissionGroupIds())->reject(fn ($id) => $id === Group::GUEST_ID);
         
         if ($groups->isEmpty() && !$user->isGuest()) {
             return (int) $this->settings->get("huseyinfiliz-bump.{$fallbackKey}", 0);
         }
         
-        $groupIds = $groups->pluck('id')->sort()->implode(',');
+        $groupIds = $groups->sort()->implode(',');
         $version = $this->getCacheVersion();
         $cacheKey = "bump:groups:{$version}:{$groupIds}:{$type}:{$key}";
 
@@ -86,9 +89,9 @@ class BumpSettingsResolver
             $groupOverrides = $this->getGroupOverrides($type);
             $values = [];
 
-            foreach ($groups as $group) {
-                if (isset($groupOverrides[$group->id][$key])) {
-                    $values[] = (int) $groupOverrides[$group->id][$key];
+            foreach ($groups as $groupId) {
+                if (isset($groupOverrides[$groupId][$key])) {
+                    $values[] = (int) $groupOverrides[$groupId][$key];
                 }
             }
 
@@ -171,10 +174,7 @@ class BumpSettingsResolver
         $moderatorGroups = json_decode($this->settings->get('huseyinfiliz-bump.moderator-groups', '[]'), true) ?: [];
         if (empty($moderatorGroups)) return false;
 
-        $groups = $user->groups;
-        if ($groups->isEmpty()) return false;
-
-        return !empty(array_intersect($moderatorGroups, $groups->pluck('id')->toArray()));
+        return !$user->isGuest() && !empty(array_intersect($moderatorGroups, $user->permissionGroupIds()));
     }
 
     /**
@@ -188,9 +188,6 @@ class BumpSettingsResolver
         $bypassGroups = json_decode($this->settings->get('huseyinfiliz-bump.absorber-bypass-groups', '[]'), true) ?: [];
         if (empty($bypassGroups)) return false;
 
-        $groups = $user->groups;
-        if ($groups->isEmpty()) return false;
-
-        return !empty(array_intersect($bypassGroups, $groups->pluck('id')->toArray()));
+        return !$user->isGuest() && !empty(array_intersect($bypassGroups, $user->permissionGroupIds()));
     }
 }
