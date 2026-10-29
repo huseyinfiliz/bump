@@ -30,7 +30,7 @@
   justify-content: center;
   background: @bg-color;
   border-radius: @card-radius-sm;
-  color: @text-color;
+  color: var(--text-color);
   flex-shrink: 0;
 }
 
@@ -46,8 +46,8 @@
 
   // Content area
   &-content {
-    background: @body-bg;
-    border: 1px solid @control-bg;
+    background: var(--body-bg);
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius;
     padding: 20px;
     min-height: 400px;
@@ -77,8 +77,8 @@
   }
 
   .StatsCard {
-    background: @body-bg;
-    border: 1px solid @control-bg;
+    background: var(--body-bg);
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius;
     padding: 16px;
     display: flex;
@@ -146,7 +146,7 @@
 
     &-label {
       font-size: 11px;
-      color: @muted-color;
+      color: var(--muted-color);
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 600;
@@ -172,7 +172,7 @@
       .card-variant(@primary-color; fade(@primary-color, 10%); @primary-color);
 
       .StatsCard-value {
-        color: @primary-color;
+        color: var(--primary-color);
       }
     }
 
@@ -216,7 +216,7 @@
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
-    background: fade(@control-bg, 50%);
+    background: var(--control-bg-fade-50);
     padding: 4px;
     border-radius: 10px;
 
@@ -235,7 +235,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: @muted-color;
+    color: var(--muted-color);
     font-size: 13px;
     font-weight: 600;
     transition: all @transition-speed @transition-smooth;
@@ -249,13 +249,13 @@
     }
 
     &:hover {
-      color: @text-color;
-      background: fade(@body-bg, 50%);
+      color: var(--text-color);
+      background: var(--body-bg-fade-50);
     }
 
     &.active {
-      color: @primary-color;
-      background: @body-bg;
+      color: var(--primary-color);
+      background: var(--body-bg);
       box-shadow: @shadow-sm;
       font-weight: 700;
     }
@@ -264,7 +264,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: @primary-color;
+      background: var(--primary-color);
       color: white;
       font-size: 10px;
       font-weight: 700;
@@ -286,7 +286,7 @@
   .SettingsSection {
     margin-bottom: 32px;
     background: color-mix(in srgb, var(--control-bg) 25%, transparent);
-    border: 1px solid @control-bg;
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius;
     padding: 20px;
 
@@ -297,10 +297,10 @@
     h3 {
       font-size: 16px;
       font-weight: 700;
-      color: @text-color;
+      color: var(--text-color);
       margin: 0 0 16px;
       padding-bottom: 12px;
-      border-bottom: 1px solid @control-bg;
+      border-bottom: 1px solid var(--control-bg);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -323,18 +323,18 @@
       label {
         display: block;
         font-weight: 600;
-        color: @text-color;
+        color: var(--text-color);
         margin-bottom: 8px;
         font-size: 14px;
       }
 
       .helpText {
         font-size: 12px;
-        color: @muted-color;
+        color: var(--muted-color);
         margin-top: 6px;
         line-height: 1.5;
         padding-left: 10px;
-        border-left: 2px solid @control-bg;
+        border-left: 2px solid var(--control-bg);
       }
 
       input[type="text"],
@@ -343,15 +343,15 @@
       textarea {
         width: 100%;
         max-width: 500px;
-        border: 1px solid @control-bg;
+        border: 1px solid var(--control-bg);
         border-radius: 8px;
         font-size: 14px;
         font-family: inherit;
         transition: border-color @transition-speed ease;
-        background: @body-bg;
+        background: var(--body-bg);
 
         &:focus {
-          border-color: @primary-color;
+          border-color: var(--primary-color);
           outline: none;
           box-shadow: 0 0 0 3px fade(@primary-color, 10%);
         }
@@ -371,14 +371,14 @@
         transition: background @transition-speed ease;
 
         &:hover {
-          background: fade(@control-bg, 30%);
+          background: var(--control-bg-fade-30);
         }
 
         input[type="checkbox"] {
           width: 18px;
           height: 18px;
           cursor: pointer;
-          accent-color: @primary-color;
+          accent-color: var(--primary-color);
         }
       }
     }
@@ -397,12 +397,12 @@
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 2px solid @control-bg;
+    border-bottom: 2px solid var(--control-bg);
 
     h3 {
       font-size: 18px;
       font-weight: 700;
-      color: @text-color;
+      color: var(--text-color);
       margin: 0;
       display: flex;
       align-items: center;
@@ -423,7 +423,7 @@
 
   .RecentBumps-count {
     font-size: 13px;
-    color: @muted-color;
+    color: var(--muted-color);
     font-weight: 600;
     padding: 6px 12px;
     background: fade(@control-bg, 30%);
@@ -438,8 +438,8 @@
 
   // Bump cards
   .BumpCard {
-    background: @body-bg;
-    border: 1px solid @control-bg;
+    background: var(--body-bg);
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius;
     padding: 16px;
     transition: all @transition-speed @transition-smooth;
@@ -461,7 +461,7 @@
     }
 
     &--manual::before {
-      background: @primary-color;
+      background: var(--primary-color);
     }
 
     &-header {
@@ -481,13 +481,13 @@
       min-width: 0;
 
       i {
-        color: @muted-color;
+        color: var(--muted-color);
         font-size: 14px;
         flex-shrink: 0;
       }
 
       a {
-        color: @text-color;
+        color: var(--text-color);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -496,7 +496,7 @@
         min-width: 0;
 
         &:hover {
-          color: @primary-color;
+          color: var(--primary-color);
 
           strong {
             text-decoration: underline;
@@ -537,7 +537,7 @@
 
       &--manual {
         background: fade(@primary-color, 12%);
-        color: @primary-color;
+        color: var(--primary-color);
       }
 
       @media (max-width: 640px) {
@@ -549,7 +549,7 @@
 
     &-dateBadge {
       font-size: 12px;
-      color: @muted-color;
+      color: var(--muted-color);
       display: inline-flex;
       align-items: center;
       gap: 5px;
@@ -567,7 +567,7 @@
       justify-content: space-between;
       align-items: center;
       padding-top: 12px;
-      border-top: 1px solid @control-bg;
+      border-top: 1px solid var(--control-bg);
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -577,7 +577,7 @@
       align-items: center;
       gap: 6px;
       font-size: 13px;
-      color: @muted-color;
+      color: var(--muted-color);
 
       i {
         font-size: 12px;
@@ -594,7 +594,7 @@
       gap: 6px;
       padding: 4px 10px;
       background: fade(@primary-color, 8%);
-      color: @primary-color;
+      color: var(--primary-color);
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
@@ -631,13 +631,13 @@
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    color: @muted-color;
+    color: var(--muted-color);
 
     .LoadingIndicator {
       margin-bottom: 20px;
 
       &::after {
-        border-color: @primary-color transparent transparent transparent;
+        border-color: var(--primary-color) transparent transparent transparent;
       }
     }
 
@@ -654,7 +654,7 @@
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    color: @muted-color;
+    color: var(--muted-color);
     text-align: center;
 
     &-icon {
@@ -694,12 +694,12 @@
       &:first-of-type {
         font-size: 16px;
         font-weight: 600;
-        color: @text-color;
+        color: var(--text-color);
       }
 
       &.helpText {
         font-size: 13px;
-        color: @muted-color;
+        color: var(--muted-color);
         line-height: 1.6;
       }
     }
@@ -747,7 +747,7 @@
       p {
         margin: 0 0 8px;
         font-size: 14px;
-        color: @text-color;
+        color: var(--text-color);
         line-height: 1.6;
         position: relative;
         z-index: 1;
@@ -763,7 +763,7 @@
 
         &.helpText {
           font-size: 13px;
-          color: @muted-color;
+          color: var(--muted-color);
           margin-top: 8px;
         }
       }
@@ -798,8 +798,8 @@
 
   // Group Override Card
   .GroupOverrideCard {
-    background: @body-bg;
-    border: 1px solid @control-bg;
+    background: var(--body-bg);
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius;
     overflow: hidden;
     transition: all @transition-speed @transition-smooth;
@@ -832,8 +832,8 @@
       justify-content: space-between;
       align-items: center;
       padding: 18px 24px;
-      background: linear-gradient(135deg, fade(@control-bg, 15%) 0%, fade(@control-bg, 25%) 100%);
-      border-bottom: 1px solid @control-bg;
+      background: linear-gradient(135deg, var(--control-bg-fade-15) 0%, var(--control-bg-fade-25) 100%);
+      border-bottom: 1px solid var(--control-bg);
       gap: 16px;
 
       @media (max-width: 640px) {
@@ -850,7 +850,7 @@
       gap: 12px;
       font-size: 17px;
       font-weight: 700;
-      color: @text-color;
+      color: var(--text-color);
 
       i {
         font-size: 20px;
@@ -886,7 +886,7 @@
 
           &:hover {
             background: fade(@control-bg, 50%);
-            border-color: @control-bg;
+            border-color: var(--control-bg);
             transform: translateY(-1px);
           }
 
@@ -915,7 +915,7 @@
     }
 
     &-section {
-      background: fade(@control-bg, 5%);
+      background: var(--control-bg-fade-5);
       border-radius: @card-radius-sm;
       padding: 16px;
       border: 1px solid fade(@control-bg, 50%);
@@ -923,10 +923,10 @@
       h4 {
         font-size: 13px;
         font-weight: 700;
-        color: @text-color;
+        color: var(--text-color);
         margin: 0 0 16px;
         padding-bottom: 12px;
-        border-bottom: 2px solid @control-bg;
+        border-bottom: 2px solid var(--control-bg);
         display: flex;
         align-items: center;
         gap: 10px;
@@ -935,7 +935,7 @@
 
         i {
           font-size: 16px;
-          color: @primary-color;
+          color: var(--primary-color);
           opacity: 0.9;
         }
       }
@@ -966,14 +966,14 @@
     &-label {
       font-size: 13px;
       font-weight: 600;
-      color: @text-color;
+      color: var(--text-color);
       flex-shrink: 0;
     }
 
     &-value {
       font-size: 13px;
       font-weight: 600;
-      color: @muted-color;
+      color: var(--muted-color);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -981,7 +981,7 @@
       justify-content: flex-end;
 
       &--custom {
-        color: @primary-color;
+        color: var(--primary-color);
         font-weight: 700;
       }
     }
@@ -990,8 +990,8 @@
       display: inline-flex;
       align-items: center;
       padding: 2px 8px;
-      background: fade(@muted-color, 10%);
-      color: @muted-color;
+      background: var(--muted-color-fade-10);
+      color: var(--muted-color);
       font-size: 11px;
       font-weight: 600;
       border-radius: 10px;
@@ -1040,7 +1040,7 @@
     max-height: 400px;
     overflow-y: auto;
     padding: 8px;
-    border: 1px solid @control-bg;
+    border: 1px solid var(--control-bg);
     border-radius: @card-radius-sm;
     margin-bottom: 20px;
     background: fade(@control-bg, 5%);
@@ -1077,7 +1077,7 @@
       width: 18px;
       height: 18px;
       flex-shrink: 0;
-      accent-color: @primary-color;
+      accent-color: var(--primary-color);
     }
 
     &-label {
@@ -1104,7 +1104,7 @@
     &-name {
       font-size: 14px;
       font-weight: 600;
-      color: @text-color;
+      color: var(--text-color);
       flex: 1;
     }
 
@@ -1114,7 +1114,7 @@
       justify-content: center;
       width: 20px;
       height: 20px;
-      color: @primary-color;
+      color: var(--primary-color);
       font-size: 14px;
       margin-left: auto;
 
@@ -1127,7 +1127,7 @@
   .SelectGroups-empty {
     text-align: center;
     padding: 40px 20px;
-    color: @muted-color;
+    color: var(--muted-color);
     font-size: 14px;
   }
 }
@@ -1153,7 +1153,7 @@
   gap: 8px;
   min-height: 36px;
   padding: 8px;
-  border: 1px solid @control-bg;
+  border: 1px solid var(--control-bg);
   border-radius: @card-radius-sm;
   background: fade(@control-bg, 5%);
   margin-bottom: 12px;
@@ -1209,9 +1209,28 @@
 }
 
 .SelectGroups-empty {
-  color: @muted-color;
+  color: var(--muted-color);
   font-size: 13px;
   font-style: italic;
   margin: 0;
   padding: 8px 0;
+}
+
+[data-theme^=light] {
+  --control-bg-fade-50: fade(@control-bg-light, 50%);
+  --body-bg-fade-50: fade(@body-bg-light, 50%);
+  --control-bg-fade-30: fade(@control-bg-light, 30%);
+  --control-bg-fade-15: fade(@control-bg-light, 15%);
+  --control-bg-fade-25: fade(@control-bg-light, 25%);
+  --control-bg-fade-5: fade(@control-bg-light, 5%);
+  --muted-color-fade-10: fade(@muted-color-light, 10%);
+}
+[data-theme^=dark] {
+  --control-bg-fade-50: fade(@control-bg-dark, 50%);
+  --body-bg-fade-50: fade(@body-bg-dark, 50%);
+  --control-bg-fade-30: fade(@control-bg-dark, 30%);
+  --control-bg-fade-15: fade(@control-bg-dark, 15%);
+  --control-bg-fade-25: fade(@control-bg-dark, 25%);
+  --control-bg-fade-5: fade(@control-bg-dark, 5%);
+  --muted-color-fade-10: fade(@muted-color-dark, 10%);
 }
