@@ -24,9 +24,6 @@ A powerful discussion bumping system for [Flarum](https://flarum.org) forums. Al
 | `1.x` | Flarum 1.x | As required by Flarum 1.x |
 | `2.x` | Flarum 2.0 and newer 2.x releases | PHP 8.3+ |
 
-The `2.x` branch uses Flarum 2's resource API. Manual bumps use
-`POST /api/discussions/{id}/bump` and return the updated discussion.
-
 ## Features
 
 - 🔄 **Manual Bumping**: Users can bump discussions to bring them back to the top
@@ -42,14 +39,9 @@ The `2.x` branch uses Flarum 2's resource API. Manual bumps use
 
 ### Audit Logging
 
-When `flarum/audit` is installed and enabled, successful manual bumps are logged as
-`discussion.manually_bumped`. Each entry identifies the actor and discussion and
-records whether moderator bypass was used. Rejected requests do not create success
-entries. Bump works without the audit extension.
-
-Manual bump ordering, quota consumption and audit entries are saved in the same
-transaction. Concurrent requests from one member cannot consume the same remaining
-quota or cooldown allowance. Cached counts are used for display, not authorization.
+Install and enable `flarum/audit` to keep a history of successful manual bumps.
+Each entry shows who bumped the discussion and whether moderator bypass was used.
+Audit logging is optional; Bump also works without it.
 
 ### Installation
 
@@ -167,7 +159,7 @@ Settings are resolved in this order:
 ### Cache Management
 The extension automatically clears all caches when you save settings in admin panel.
 
-If you modify database values manually, run:
+If settings appear out of date after updating the extension, clear the forum cache:
 ```bash
 php flarum cache:clear
 ```
