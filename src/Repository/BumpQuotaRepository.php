@@ -30,21 +30,18 @@ class BumpQuotaRepository
         return BumpQuota::getLastManualBump($userId, $discussionId);
     }
 
+    public function getFreshQuotaCounts(int $userId): object
+    {
+        return BumpQuota::getQuotaCounts($userId);
+    }
+
     public function createBump(int $userId, int $discussionId, Carbon $bumpedAt): BumpQuota
     {
-        $bump = BumpQuota::create([
+        return BumpQuota::create([
             'user_id' => $userId,
             'discussion_id' => $discussionId,
             'bumped_at' => $bumpedAt,
         ]);
-
-        // Kullanıcının kişisel kota önbelleğini temizle
-        $this->invalidateQuotaCache($userId);
-
-        // DÜZELTME: Yeni bump atıldığında Admin panelindeki global istatistikleri de anında yenile
-        $this->invalidateStatsCache();
-
-        return $bump;
     }
 
     /** @return \Illuminate\Database\Eloquent\Collection<int, BumpQuota> */

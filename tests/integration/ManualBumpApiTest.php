@@ -9,6 +9,11 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
 use HuseyinFiliz\Bump\BumpQuota;
+use HuseyinFiliz\Bump\Event\ManuallyBumped;
+use HuseyinFiliz\Bump\Repository\BumpQuotaRepository;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Events\Dispatcher;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -268,5 +273,44 @@ class ManualBumpApiTest extends TestCase
         $this->assertEquals(403, $this->send($this->request('POST', '/api/bump/clear-cache', ['authenticatedAs' => 2]))->getStatusCode());
         $this->assertEquals(200, $this->send($this->request('GET', '/api/bump/stats', ['authenticatedAs' => 1]))->getStatusCode());
         $this->assertEquals(204, $this->send($this->request('POST', '/api/bump/clear-cache', ['authenticatedAs' => 1]))->getStatusCode());
+    }
+
+    #[Test]
+    public function stale_display_cache_cannot_authorize_an_extra_bump()
+    {
+        $this->setting('huseyinfiliz-bump.owner-daily-quota', 1);
+        $this->setting('huseyinfiliz-bump.manual-cooldown-hours', 0);
+        $container = $this->app()->getContainer();
+        BumpQuota::create(['user_id' => 2, 'discussion_id' => 1, 'bumped_at' => Carbon::now()]);
+        $container->make(CacheRepository::class)->put('bump_quota_counts_2', (object) ['daily_count' => 0, 'weekly_count' => 0], 60);
+
+        $response = $this->send($this->request('POST', '/api/discussions/2/bump', ['authenticatedAs' => 2]));
+
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(1, BumpQuota::count());
+        $this->assertNull(Discussion::find(2)->last_bumped_at);
+    }
+
+    #[Test]
+    public function accounting_failure_rolls_back_ordering_and_does_not_emit_success()
+    {
+        $container = $this->app()->getContainer();
+        $before = Discussion::find(1)->getRawOriginal('last_posted_at');
+        $events = [];
+        $container->make(Dispatcher::class)->listen(ManuallyBumped::class, function ($event) use (&$events) {
+            $events[] = $event;
+        });
+        $repository = Mockery::mock(BumpQuotaRepository::class)->makePartial();
+        $repository->shouldReceive('getLastManualBump')->andReturnNull();
+        $repository->shouldReceive('createBump')->once()->andThrow(new \RuntimeException('Simulated accounting failure'));
+        $container->instance(BumpQuotaRepository::class, $repository);
+
+        $response = $this->send($this->request('POST', '/api/discussions/1/bump', ['authenticatedAs' => 2]));
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals($before, Discussion::find(1)->getRawOriginal('last_posted_at'));
+        $this->assertNull(Discussion::find(1)->last_bumped_at);
+        $this->assertEquals(0, BumpQuota::count());
+        $this->assertSame([], $events);
     }
 }
