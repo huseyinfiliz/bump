@@ -46,3 +46,11 @@ jobs:
       - name: Check TypeScript
         working-directory: js
         run: yarn check-typings
+
+      - name: Build TypeScript declarations
+        working-directory: js
+        run: yarn build-typings
+
+      - name: Check type coverage
+        working-directory: js
+        run: yarn check-typings-coverage
