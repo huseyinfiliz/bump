@@ -85,7 +85,11 @@
         "analyse:phpstan:baseline": "Generate PHPStan baseline for existing errors."
     },
     "require-dev": {
+        "flarum/audit": "^2.0",
         "flarum/testing": "^2.0.0",
         "flarum/phpstan": "^2.0.0"
+    },
+    "suggest": {
+        "flarum/audit": "Log successful manual discussion bumps, including moderator bypasses."
     }
 }

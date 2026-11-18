@@ -27,6 +27,15 @@ return [
 
     new Extend\Locales(__DIR__.'/locale'),
 
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-audit', fn () => [
+            (new \Flarum\Audit\Extend\Audit())
+                ->listen(Event\ManuallyBumped::class, 'discussion.manually_bumped', fn (Event\ManuallyBumped $event) => [
+                    'discussion_id' => $event->discussion->id,
+                    'moderator_bypass' => $event->moderatorBypass,
+                ]),
+        ]),
+
     // Register BumpSettingsResolver as a singleton service
     (new Extend\ServiceProvider())
         ->register(BumpServiceProvider::class),

@@ -1,3 +1,9 @@
+flarum-audit:
+  lib:
+    browser:
+      discussion:
+        manually_bumped: Manually bumped discussion {discussion}
+
 huseyinfiliz-bump:
   admin:
     # Tabs
