@@ -25,5 +25,8 @@
         "check-typings": "tsc --noEmit --emitDeclarationOnly false",
         "check-typings-coverage": "typescript-coverage-report"
     },
-    "prettier": "@flarum/prettier-config"
+    "prettier": "@flarum/prettier-config",
+    "resolutions": {
+        "**/type-coverage-core/minimatch": "6.2.2"
+    }
 }

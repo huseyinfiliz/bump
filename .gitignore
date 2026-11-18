@@ -20,6 +20,7 @@ yarn-error.log*
 tests/.phpunit.result.cache
 /tests/integration/tmp
 coverage/
+/js/coverage-ts/
 .phpunit.result.cache
 .nyc_output
 
