@@ -2,6 +2,9 @@ name: Bump JS
 
 on: [workflow_dispatch, push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       
       - name: Install dependencies
         working-directory: js
@@ -27,3 +30,7 @@ jobs:
       - name: Build
         working-directory: js
         run: yarn build
+
+      - name: Check TypeScript
+        working-directory: js
+        run: yarn check-typings
